@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EPIC IPAG — iLead Reference Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ic:#1558A5;--ic-m:#4A89DC;--ic-l:#EBF3FF;--ic-b:#B8D4F5;--ic-d:#0A3A78;
+  --ip:#0D6B4F;--ip-m:#2EAE80;--ip-l:#E6F5F0;--ip-b:#A8DDD0;--ip-d:#074D34;
+  --ig:#7D4A0A;--ig-m:#E07B20;--ig-l:#FDF1E6;--ig-b:#F5C891;--ig-d:#5C3005;
+  --R-bg:#D4EDDA;--R-c:#155724;
+  --A-bg:#CCE5FF;--A-c:#004085;
+  --C-bg:#FFF3CD;--C-c:#856404;
+  --I-bg:#E9ECEF;--I-c:#495057;
+  --bg:#F7F8FA;--sur:#FFFFFF;--bdr:#E2E6EA;--bdr2:#C8D2DC;
+  --t1:#1A1F2E;--t2:#4A5568;--t3:#8A9BB0;--t4:#C5CDD8;
+  --r:10px;--sh:0 2px 12px rgba(0,0,0,.08);--sh2:0 4px 20px rgba(0,0,0,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh}
+
+/* ── HEADER ── */
+.hdr{background:var(--t1);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:200;border-bottom:2px solid #2A3347}
+.hdr-l{display:flex;align-items:center;gap:12px}
+.hdr-badge{background:var(--ic);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:5px;letter-spacing:2px}
+.hdr-title{font-size:13px;font-weight:700;color:#E2E8F4}
+.hdr-sub{font-size:10px;color:#5A6880;margin-top:1px}
+.hdr-r{font-size:10px;color:#3A4560;font-weight:500}
+
+/* ── NAV ── */
+.nav{background:var(--sur);border-bottom:1px solid var(--bdr);padding:0 28px;display:flex;gap:2px;position:sticky;top:54px;z-index:99;overflow-x:auto}
+.nb{padding:13px 18px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color:var(--t3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nb:hover{color:var(--t2)}
+.nb.on{color:var(--ic);border-bottom-color:var(--ic);font-weight:700}
+.n-tag{display:inline-block;background:var(--bg);border-radius:8px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:5px;color:var(--t3)}
+
+/* ── SECTION ── */
+.sec{display:none;padding:24px 28px;max-width:1440px;margin:0 auto}
+.sec.on{display:block}
+
+/* ══════════════════════════════════════
+   SECTION 1 — OVERVIEW
+══════════════════════════════════════ */
+.ov-title{margin-bottom:22px}
+.ov-title h2{font-size:22px;font-weight:800}
+.ov-title p{font-size:13px;color:var(--t2);margin-top:5px;max-width:620px;line-height:1.65}
+
+.stats-row{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.stat{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 18px;min-width:110px;flex:1}
+.stat-n{font-size:26px;font-weight:800;color:var(--t1)}
+.stat-l{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:24px}
+.pcard{border-radius:var(--r);border:1px solid;overflow:hidden;box-shadow:var(--sh);transition:box-shadow .2s}
+.pcard:hover{box-shadow:var(--sh2)}
+.pcard-head{padding:16px 18px}
+.pcard-tag{font-size:9px;font-weight:700;letter-spacing:2px;opacity:.7;margin-bottom:3px}
+.pcard-name{font-size:15px;font-weight:700}
+.pcard-desc{font-size:11px;margin-top:4px;opacity:.75;line-height:1.55}
+.pcard-body{padding:12px 18px 14px;background:rgba(255,255,255,.65);border-top:1px solid}
+.pcard-body-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;opacity:.6;margin-bottom:8px}
+.ps-chip{display:inline-block;padding:4px 10px;border-radius:5px;margin:0 4px 5px 0;font-size:11px;font-weight:500;border:1px solid;cursor:default;transition:all .15s}
+
+.flow-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:18px 20px}
+.flow-card h3{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--t1)}
+.flow-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap}
+.flow-tag{padding:4px 11px;border-radius:5px;font-size:11px;font-weight:600}
+.flow-arr{color:var(--t3);font-size:15px}
+.flow-desc{font-size:12px;color:var(--t2);flex:1}
+
+/* ══════════════════════════════════════
+   SECTION 2 — MY PILLAR
+══════════════════════════════════════ */
+.pillar-selector{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+.ps-sel-btn{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:40px;border:1.5px solid var(--bdr);background:var(--sur);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .2s}
+.ps-sel-btn:hover{border-color:var(--bdr2);box-shadow:var(--sh)}
+.ps-sel-btn.on-ic{background:var(--ic-l);border-color:var(--ic);color:var(--ic);font-weight:700}
+.ps-sel-btn.on-ip{background:var(--ip-l);border-color:var(--ip);color:var(--ip);font-weight:700}
+.ps-sel-btn.on-ig{background:var(--ig-l);border-color:var(--ig);color:var(--ig);font-weight:700}
+.ps-sel-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ps-sel-cnt{display:inline-block;background:rgba(0,0,0,.08);border-radius:8px;font-size:10px;font-weight:700;padding:1px 7px;margin-left:4px}
+
+.pillar-summary{border-radius:var(--r);padding:16px 20px;border:1px solid;margin-bottom:20px}
+.ps-smry-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:12px}
+.ps-smry-badge{font-size:11px;font-weight:700;letter-spacing:2px;padding:5px 12px;border-radius:6px;flex-shrink:0}
+.ps-smry-desc{font-size:13px;line-height:1.6;flex:1}
+.ps-smry-chips{display:flex;gap:6px;flex-wrap:wrap}
+.ps-smry-chip{font-size:11px;font-weight:600;padding:4px 11px;border-radius:5px;border:1px solid}
+
+.task-list{display:flex;flex-direction:column;gap:9px}
+.task-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .2s}
+.task-card:hover{box-shadow:var(--sh2)}
+.tc-hd{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;user-select:none}
+.tc-num{width:28px;height:28px;border-radius:7px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tc-name{font-size:13px;font-weight:600;flex:1}
+.tc-meta{display:flex;align-items:center;gap:6px}
+.tc-ps-tag{font-size:10px;font-weight:600;padding:2px 9px;border-radius:4px;border:1px solid;white-space:nowrap}
+.tc-tgl{font-size:11px;color:var(--t3);margin-left:6px;flex-shrink:0;transition:transform .2s}
+.tc-tgl.open{transform:rotate(180deg)}
+.tc-body{display:none;padding:0 18px 16px 58px;border-top:1px solid var(--bdr)}
+.tc-body.open{display:block;padding-top:14px}
+.tc-2col{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}
+.tc-col{padding:13px 15px;border-radius:8px;border:1px solid}
+.tc-col-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;opacity:.65;margin-bottom:8px}
+.tc-items{list-style:none;display:flex;flex-direction:column;gap:5px}
+.tc-items li{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--t2);line-height:1.5}
+.tc-items li::before{content:'·';font-weight:700;flex-shrink:0;margin-top:0}
+.tc-output{font-size:12px;color:var(--t2);line-height:1.6;padding:10px 12px;background:rgba(255,255,255,.7);border-radius:6px;border:1px solid var(--bdr)}
+.tc-output-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;opacity:.6;margin-bottom:6px}
+.tc-output-val{font-size:11.5px;line-height:1.6}
+
+/* workflow cross-ref inside task */
+.tc-xref{margin-top:10px;padding:10px 12px;border-radius:6px;background:var(--bg);border:1px solid var(--bdr)}
+.tc-xref-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--t3);margin-bottom:6px}
+.tc-xref-tags{display:flex;gap:5px;flex-wrap:wrap}
+.tc-xref-tag{font-size:10px;font-weight:500;padding:3px 9px;border-radius:4px;cursor:pointer;border:1px solid;transition:all .15s}
+.tc-xref-tag:hover{box-shadow:var(--sh)}
+
+/* ══════════════════════════════════════
+   SECTION 3 — COLLABORATION
+══════════════════════════════════════ */
+.collab-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:gap;gap:10px}
+.collab-header h2{font-size:18px;font-weight:800}
+.collab-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
+.leg-b{padding:2px 9px;border-radius:4px;font-size:10px;font-weight:700}
+
+.wf-group-label{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);margin-bottom:10px;margin-top:20px;padding-left:2px}
+.wf-group-label:first-of-type{margin-top:0}
+
+.wf-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);margin-bottom:9px;transition:box-shadow .2s}
+.wf-card:hover{box-shadow:var(--sh2)}
+.wf-hd{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;user-select:none}
+.wf-num{font-size:10px;font-weight:700;color:var(--t3);min-width:22px;font-variant-numeric:tabular-nums}
+.wf-name{font-size:13px;font-weight:600;flex:1}
+.wf-summary-badges{display:flex;gap:4px}
+.wf-grp-tag{font-size:9px;font-weight:600;padding:2px 8px;border-radius:4px;color:var(--t3);background:var(--bg);border:1px solid var(--bdr);margin-right:4px}
+.wf-tgl{font-size:11px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.wf-tgl.open{transform:rotate(180deg)}
+
+.wf-body{display:none;border-top:1px solid var(--bdr)}
+.wf-body.open{display:block}
+.wf-desc{padding:11px 18px;font-size:12px;color:var(--t2);line-height:1.6;background:#FAFBFD;border-bottom:1px solid var(--bdr);border-left:3px solid var(--bdr2)}
+
+/* RACI table */
+.wf-tbl-wrap{overflow-x:auto}
+table.wft{width:100%;border-collapse:collapse;font-size:12px}
+.wft th{background:#FAFBFD;border-bottom:2px solid var(--bdr);padding:9px 14px;font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--t3);white-space:nowrap}
+.wft .th-step{text-align:left;min-width:190px;background:#F4F5F8}
+.wft .th-ic{color:var(--ic);min-width:240px;border-left:1px solid var(--bdr)}
+.wft .th-ip{color:var(--ip);min-width:240px;border-left:1px solid var(--bdr)}
+.wft .th-ig{color:var(--ig);min-width:240px;border-left:1px solid var(--bdr)}
+.wft td{padding:11px 14px;border-bottom:1px solid var(--bdr);vertical-align:top}
+.wft tr:last-child td{border-bottom:none}
+.wft tr:hover td{background:#F8FBFF}
+.wft td.td-step{background:#FAFBFD;min-width:190px;border-right:1px solid var(--bdr)}
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;background:var(--bdr);color:var(--t3);font-size:10px;font-weight:700;margin-right:7px;flex-shrink:0;vertical-align:middle}
+.step-nm{font-size:11.5px;font-weight:600;color:var(--t1)}
+.wft td.td-ic{border-left:1px solid var(--bdr)}
+.wft td.td-ip{border-left:1px solid var(--bdr)}
+.wft td.td-ig{border-left:1px solid var(--bdr)}
+
+.raci-cell-inner{display:flex;flex-direction:column;gap:5px}
+.raci-row{display:flex;align-items:flex-start;gap:7px}
+.rbadge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;font-size:10px;font-weight:700;flex-shrink:0}
+.raci-ps{font-size:11px;color:var(--t2);line-height:1.5;flex:1}
+.raci-ps strong{font-weight:600;color:var(--t1)}
+.cell-empty{text-align:center;color:var(--t4);font-size:18px;padding:4px 0}
+
+/* ══════════════════════════════════════
+   SECTION 4 — PS REFERENCE
+══════════════════════════════════════ */
+.ps-ref-ctrl{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.ps-ref-ctrl input{flex:1;max-width:340px;padding:9px 14px;border:1px solid var(--bdr);border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--t1);background:var(--sur);outline:none;transition:border .15s}
+.ps-ref-ctrl input:focus{border-color:var(--ic)}
+.flt-btn{padding:5px 13px;border-radius:20px;border:1px solid var(--bdr);background:var(--sur);color:var(--t2);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s}
+.flt-btn:hover{border-color:var(--bdr2)}
+
+.ps-ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.ps-ref-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:all .2s}
+.ps-ref-card:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.prc-head{padding:13px 16px}
+.prc-pillar{font-size:9px;font-weight:700;letter-spacing:2px;opacity:.7;margin-bottom:3px}
+.prc-name{font-size:13px;font-weight:700}
+.prc-role{font-size:11px;opacity:.7;margin-top:2px;line-height:1.4}
+.prc-body{padding:11px 16px;background:#FAFBFD;border-top:1px solid var(--bdr)}
+.prc-items{list-style:none}
+.prc-items li{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:11px;color:var(--t1);line-height:1.5}
+.prc-items li:last-child{border-bottom:none}
+.prc-n{font-size:10px;font-weight:700;color:var(--t3);min-width:18px;padding-top:1px}
+
+/* misc */
+.xbtn{padding:6px 13px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;cursor:pointer;color:var(--t2);transition:all .15s}
+.xbtn:hover{border-color:var(--bdr2);background:var(--sur)}
+
+@media(max-width:900px){
+  .pillars-grid{grid-template-columns:1fr}
+  .tc-2col{grid-template-columns:1fr}
+  .sec{padding:14px 16px}
+  .hdr,.nav{padding-left:16px;padding-right:16px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-badge">EPIC</div>
+    <div>
+      <div class="hdr-title">iLead Reference — IC · IP · IG</div>
+      <div class="hdr-sub">Nhiệm vụ · Professional Services · RACI Collaboration</div>
+    </div>
+  </div>
+  <div class="hdr-r">IPAG · 2026</div>
+</header>
+
+<nav class="nav">
+  <button class="nb on" onclick="goSec('ov')">Tổng quan <span class="n-tag">3 trụ</span></button>
+  <button class="nb" onclick="goSec('mp')">Công việc của tôi <span class="n-tag">IC · IP · IG</span></button>
+  <button class="nb" onclick="goSec('co')">Phối hợp RACI <span class="n-tag">9 luồng</span></button>
+  <button class="nb" onclick="goSec('ps')">PS Reference <span class="n-tag">12 nhóm</span></button>
+</nav>
+
+<!-- ══ OVERVIEW ══ -->
+<div id="ov" class="sec on">
+  <div class="ov-title">
+    <h2>EPIC iLead — Hệ thống quản trị nhân sự IPAG</h2>
+    <p>Ba trụ cột IC · IP · IG phối hợp xuyên suốt 9 luồng công việc trong vòng đời nhân viên. Mỗi trụ cột có nhiệm vụ nội tại và vai trò riêng trong các luồng phối hợp.</p>
+  </div>
+  <div class="stats-row" id="ov-stats"></div>
+  <div class="pillars-grid" id="ov-pillars"></div>
+  <div class="flow-card"><h3>Luồng phối hợp điển hình</h3><div id="ov-flows"></div></div>
+</div>
+
+<!-- ══ MY PILLAR ══ -->
+<div id="mp" class="sec">
+  <div style="margin-bottom:20px">
+    <h2 style="font-size:18px;font-weight:800;margin-bottom:5px">Công việc của tôi — Nhiệm vụ · PS · Output</h2>
+    <p style="font-size:13px;color:var(--t2);line-height:1.6">Chọn trụ cột của bạn để xem toàn bộ nhiệm vụ, Professional Services thực hiện và output kỳ vọng.</p>
+  </div>
+  <div class="pillar-selector" id="mp-selector"></div>
+  <div id="mp-summary"></div>
+  <div class="task-list" id="mp-tasks"></div>
+</div>
+
+<!-- ══ COLLABORATION ══ -->
+<div id="co" class="sec">
+  <div class="collab-header">
+    <div>
+      <h2>Phối hợp RACI — 9 luồng công việc</h2>
+      <p style="font-size:13px;color:var(--t2);margin-top:4px;line-height:1.6">Ba trụ cột cùng tham gia trong từng luồng. Mỗi ô hiển thị vai trò RACI và PS cụ thể đang thực hiện nhiệm vụ đó.</p>
+    </div>
+    <button class="xbtn" id="expand-btn" onclick="toggleExpandAll()">Expand tất cả</button>
+  </div>
+  <div class="legend">
+    <div class="leg"><span class="leg-b" style="background:var(--R-bg);color:var(--R-c)">R</span>Responsible — Người thực hiện</div>
+    <div class="leg"><span class="leg-b" style="background:var(--A-bg);color:var(--A-c)">A</span>Accountable — Chịu trách nhiệm cuối</div>
+    <div class="leg"><span class="leg-b" style="background:var(--C-bg);color:var(--C-c)">C</span>Consulted — Được hỏi ý kiến</div>
+    <div class="leg"><span class="leg-b" style="background:var(--I-bg);color:var(--I-c)">I</span>Informed — Được thông báo</div>
+    <span style="font-size:11px;color:var(--t3);margin-left:4px">· Quy tắc: mỗi bước chỉ có 1 A duy nhất</span>
+  </div>
+  <div id="wf-container"></div>
+</div>
+
+<!-- ══ PS REFERENCE ══ -->
+<div id="ps" class="sec">
+  <div style="margin-bottom:20px">
+    <h2 style="font-size:18px;font-weight:800;margin-bottom:5px">Professional Services — Danh mục đầy đủ</h2>
+    <p style="font-size:13px;color:var(--t2);line-height:1.6">12 nhóm PS trên 3 trụ cột. Tìm kiếm theo tên hoặc nội dung dịch vụ.</p>
+  </div>
+  <div class="ps-ref-ctrl">
+    <input type="text" id="ps-q" placeholder="Tìm theo tên PS hoặc nội dung..." oninput="filterPS()">
+    <div style="display:flex;gap:6px;flex-wrap:wrap" id="ps-flt"></div>
+  </div>
+  <div class="ps-ref-grid" id="ps-grid"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════
+
+const PILLARS = [
+  {
+    id:'IC', name:'IC — iLead Care', short:'iLead Care',
+    desc:'Trục con người — trực tiếp đồng hành nhân viên xuyên suốt vòng đời: thu hút, tuyển, hội nhập, giữ chân và exit.',
+    c:'var(--ic)', l:'var(--ic-l)', b:'var(--ic-b)', d:'var(--ic-d)',
+    components:['TA','Headcount Planning','Hiring','EPIC Partner'],
+    component_desc:{
+      'TA':'Talent Acquisition — tuyển dụng & thu hút nhân tài',
+      'Headcount Planning':'Lập kế hoạch nhân sự theo kỳ',
+      'Hiring':'Vận hành quy trình tuyển dụng end-to-end',
+      'EPIC Partner':'HRBP tại IPAG — đối tác nhân sự chiến lược',
+    },
+    tasks:[
+      { num:'01', name:'Lập kế hoạch nhân sự',
+        ps:['Headcount Planning','EPIC Partner'],
+        activities:['Xác định nhu cầu headcount theo từng đơn vị','Phân tích gap giữa cơ cấu hiện tại và nhu cầu tương lai','Tư vấn chiến lược nhân sự cho lãnh đạo đơn vị','Làm việc với IG để lấy dữ liệu workforce từ EPIC MIS'],
+        output:'Headcount plan chi tiết theo kỳ, kèm gap analysis làm đầu vào cho tuyển dụng.',
+        collab_wf:['wf01'] },
+      { num:'02', name:'Thu hút & Tuyển dụng',
+        ps:['TA','Hiring'],
+        activities:['Xây dựng chiến lược tuyển dụng theo nhóm vị trí','Sourcing ứng viên đa kênh — JD, referral, headhunt','Xây dựng và duy trì Employer Branding','Vận hành quy trình phỏng vấn và đánh giá ứng viên','Quản lý trải nghiệm ứng viên từ đầu đến cuối'],
+        output:'Hire đúng người, đúng thời điểm với trải nghiệm ứng viên tích cực.',
+        collab_wf:['wf02','wf03'] },
+      { num:'03', name:'Dẫn dắt Onboarding',
+        ps:['EPIC Partner','Hiring'],
+        activities:['Kết nối nhân viên mới với văn hóa và tổ chức IPAG','Dẫn dắt 90 ngày hội nhập — 30-60-90 day plan','Phối hợp IP cung cấp LMS/KMS cho nhân viên mới','Hoàn tất hồ sơ hành chính với IG'],
+        output:'Nhân viên mới hiểu rõ kỳ vọng, hội nhập nhanh và tự tin đảm nhận công việc.',
+        collab_wf:['wf04'] },
+      { num:'04', name:'Đồng hành phát triển',
+        ps:['EPIC Partner'],
+        activities:['Coaching nhân viên về lộ trình phát triển nghề nghiệp','Kết nối nhu cầu phát triển cá nhân với business need','Phối hợp IP (L&D) để đề xuất chương trình phù hợp','Hỗ trợ nhân viên xây dựng development plan cụ thể'],
+        output:'Development plan cá nhân hóa, gắn kết mục tiêu cá nhân với chiến lược tổ chức.',
+        collab_wf:['wf06'] },
+      { num:'05', name:'Facilitate Performance Review',
+        ps:['EPIC Partner'],
+        activities:['Dẫn dắt chu kỳ performance review tại đơn vị','Coaching manager về cách đánh giá và feedback hiệu quả','Đảm bảo quy trình đánh giá công bằng, nhất quán','Tổng hợp phản hồi và điều phối với IG (Performance Review)'],
+        output:'Chu kỳ review hoàn thành đúng hạn, manager đánh giá đúng chất lượng, nhân viên nhận feedback rõ ràng.',
+        collab_wf:['wf07'] },
+      { num:'06', name:'Giữ chân & Gắn kết',
+        ps:['EPIC Partner'],
+        activities:['Nhận diện sớm tín hiệu rủi ro nghỉ việc','Tư vấn retention plan cho lãnh đạo đơn vị','Là điểm chạm trực tiếp — lắng nghe và phản hồi nhân viên','Phối hợp IP về sáng kiến văn hóa và gắn kết'],
+        output:'Tỷ lệ giữ chân nhân sự chủ chốt được cải thiện, rủi ro attrition được kiểm soát sớm.',
+        collab_wf:['wf09'] },
+      { num:'07', name:'Exit & Offboarding',
+        ps:['EPIC Partner','TA'],
+        activities:['Tiến hành exit conversation để hiểu nguyên nhân thực sự','Thu thập phản hồi làm đầu vào cải thiện chính sách','Lập backfill plan và kích hoạt tuyển dụng bù kịp thời','Phối hợp IG hoàn tất quy trình pháp lý và quyết toán'],
+        output:'Offboarding chuẩn, kế hoạch bổ sung nhân sự được kích hoạt ngay, không gián đoạn vận hành.',
+        collab_wf:['wf05'] },
+    ]
+  },
+  {
+    id:'IP', name:'IP — iLead Professional', short:'iLead Professional',
+    desc:'Trục kiến thức & văn hóa — xây dựng hệ thống học tập, phát triển năng lực và định hình văn hóa tổ chức EPIC.',
+    c:'var(--ip)', l:'var(--ip-l)', b:'var(--ip-b)', d:'var(--ip-d)',
+    components:['LMS','KMS','L&D','EPIC Culture'],
+    component_desc:{
+      'LMS':'Learning Management System — nền tảng elearning',
+      'KMS':'Knowledge Management System — kho tri thức tổ chức',
+      'L&D':'Hoạt động đào tạo & phát triển con người',
+      'EPIC Culture':'Chức năng xây dựng văn hóa tổ chức EPIC',
+    },
+    tasks:[
+      { num:'01', name:'Vận hành KMS — Kho tri thức',
+        ps:['KMS'],
+        activities:['Thu thập và chuẩn hóa Process Knowledge (quy trình nội bộ)','Tổ chức Technical Knowledge theo domain chuyên môn','Xây dựng Biz Knowledge từ case study thực tế','Duy trì, cập nhật và phân loại kho tri thức liên tục','Khuyến khích nhân viên đóng góp vào KMS'],
+        output:'Knowledge base sống, luôn cập nhật — nhân viên tự tra cứu được, tổ chức không mất tri thức khi có biến động nhân sự.',
+        collab_wf:['wf04','wf05','wf09'] },
+      { num:'02', name:'Vận hành LMS — Nền tảng học tập',
+        ps:['LMS'],
+        activities:['Quản lý và vận hành hệ thống elearning','Phân phối nội dung đào tạo online đến từng nhóm người dùng','Tracking tiến độ học tập và completion rate','Tích hợp nội dung từ KMS lên LMS để phân phối','Báo cáo learning data cho IG (EPIC MIS)'],
+        output:'Platform học tập hoạt động ổn định, dữ liệu học tập đầy đủ và chính xác.',
+        collab_wf:['wf04','wf05'] },
+      { num:'03', name:'Thiết kế & triển khai đào tạo (L&D)',
+        ps:['L&D'],
+        activities:['Training Needs Analysis (TNA) — phân tích nhu cầu đào tạo','Thiết kế chương trình đào tạo theo nhóm đối tượng','Tổ chức training campaigns định kỳ (theo quý/năm)','Tổ chức Learning Retreat cho nhóm lãnh đạo và chuyên gia','Training on/offline theo yêu cầu từ đơn vị','Đo lường và báo cáo hiệu quả đào tạo'],
+        output:'Nhân viên được đào tạo đúng nhu cầu, đúng thời điểm, năng lực được cải thiện đo lường được.',
+        collab_wf:['wf05','wf06','wf07'] },
+      { num:'04', name:'Cung cấp nội dung Onboarding',
+        ps:['LMS','KMS'],
+        activities:['Xây dựng learning path cho nhân viên mới theo vai trò','Deliver modules quy trình, biz và technical qua LMS','Cung cấp tài liệu tra cứu từ KMS cho nhân viên mới','Cập nhật nội dung onboarding khi org thay đổi'],
+        output:'Nhân viên mới tiếp cận kiến thức tổ chức nhanh và có hệ thống ngay từ ngày đầu.',
+        collab_wf:['wf04'] },
+      { num:'05', name:'Phân tích gap năng lực',
+        ps:['L&D'],
+        activities:['Đọc và phân tích kết quả performance review từ IG','Xác định capability gap theo nhóm và từng cá nhân','Đề xuất giải pháp đào tạo cụ thể cho từng gap','Thiết kế lộ trình nghề nghiệp gắn với phát triển năng lực'],
+        output:'Development plan cụ thể cho từng nhóm/cá nhân, kết nối kết quả đánh giá với hành động phát triển.',
+        collab_wf:['wf07'] },
+      { num:'06', name:'Xây dựng văn hóa EPIC',
+        ps:['EPIC Culture'],
+        activities:['Thiết kế và triển khai chương trình văn hóa EPIC','Chuẩn hóa hành vi và giá trị cốt lõi của tổ chức','Triển khai sáng kiến văn hóa xuyên tổ chức','Đo lường mức độ thấm văn hóa qua khảo sát định kỳ'],
+        output:'Văn hóa tổ chức được thể hiện qua hành động thực tế, không chỉ khẩu hiệu.',
+        collab_wf:['wf09'] },
+      { num:'07', name:'Duy trì Learning Culture',
+        ps:['EPIC Culture','L&D'],
+        activities:['Khuyến khích và ghi nhận hành vi tự học','Kết nối KMS với thực hành hàng ngày','Tổ chức cộng đồng học tập và chia sẻ nội bộ','Tạo không gian cho nhân viên đóng góp kiến thức vào KMS'],
+        output:'Nhân viên chủ động học, KMS được bổ sung liên tục từ thực tế vận hành.',
+        collab_wf:['wf09'] },
+      { num:'08', name:'Knowledge Capture khi Exit',
+        ps:['KMS','L&D'],
+        activities:['Tổ chức knowledge transfer session trước khi nhân sự nghỉ','Cập nhật KMS với kiến thức, quy trình từ người rời đi','Đảm bảo tài liệu continuity cho người tiếp theo','Phối hợp với IC (EPIC Partner) trong quá trình exit'],
+        output:'Không mất tri thức quan trọng khi nhân sự nghỉ việc, người kế nhiệm tiếp nhận suôn sẻ.',
+        collab_wf:['wf05'] },
+    ]
+  },
+  {
+    id:'IG', name:'IG — iLead Governance', short:'iLead Governance',
+    desc:'Trục hệ thống & quản trị — dữ liệu nhân sự, đánh giá hiệu suất, đãi ngộ và tuân thủ chính sách.',
+    c:'var(--ig)', l:'var(--ig-l)', b:'var(--ig-b)', d:'var(--ig-d)',
+    components:['C&B','Governance','Performance Review','EPIC MIS'],
+    component_desc:{
+      'C&B':'Compensation & Benefits — đãi ngộ và phúc lợi',
+      'Governance':'Chính sách, compliance và audit nhân sự',
+      'Performance Review':'Hệ thống và vận hành đánh giá hiệu suất',
+      'EPIC MIS':'Hệ thống báo cáo & dữ liệu nhân sự (People Analytics)',
+    },
+    tasks:[
+      { num:'01', name:'Quản trị dữ liệu nhân sự (EPIC MIS)',
+        ps:['EPIC MIS'],
+        activities:['Thiết kế và duy trì data model nhân sự tổng thể','Thu thập dữ liệu từ tất cả luồng IC + IP + IG','Chuẩn hóa, làm sạch và đảm bảo chất lượng dữ liệu','Duy trì single source of truth về nhân sự toàn tổ chức'],
+        output:'Database nhân sự chính xác, đầy đủ — nền tảng tin cậy cho mọi quyết định.',
+        collab_wf:['wf01','wf07','wf09'] },
+      { num:'02', name:'Phân tích & báo cáo nhân sự',
+        ps:['EPIC MIS'],
+        activities:['Xây dựng HR dashboard định kỳ cho lãnh đạo','Phân tích attrition trend và retention risk','Báo cáo headcount, learning completion, performance distribution','Cung cấp insight on-demand cho lãnh đạo khi cần quyết định'],
+        output:'Bộ báo cáo định kỳ và ad-hoc, lãnh đạo có dữ liệu để ra quyết định nhân sự nhanh và chính xác.',
+        collab_wf:['wf01','wf09'] },
+      { num:'03', name:'Dự báo nhân lực',
+        ps:['EPIC MIS'],
+        activities:['Workforce forecast theo kịch bản tăng trưởng','Phân tích gap cung/cầu nhân sự theo kỳ','Hỗ trợ IC (Headcount Planning) với dữ liệu dự báo','Dự báo chi phí nhân sự theo headcount plan'],
+        output:'Kế hoạch nhân sự chủ động, tổ chức không bị động khi có biến động.',
+        collab_wf:['wf01'] },
+      { num:'04', name:'Thiết kế hệ thống đánh giá',
+        ps:['Performance Review'],
+        activities:['Thiết kế framework đánh giá: KPI / OKR / BMI','Xây dựng chu kỳ review và timeline rõ ràng','Thiết kế calibration process đảm bảo công bằng','Chuẩn hóa rating scale và tiêu chí đánh giá toàn tổ chức'],
+        output:'Hệ thống đánh giá rõ ràng, nhất quán — áp dụng được thống nhất toàn tổ chức.',
+        collab_wf:['wf07'] },
+      { num:'05', name:'Vận hành chu kỳ đánh giá',
+        ps:['Performance Review','EPIC MIS'],
+        activities:['Điều phối toàn bộ chu kỳ performance review','Hỗ trợ manager và EPIC Partner vận hành đúng quy trình','Tổng hợp, phân tích và calibrate kết quả đánh giá','Cung cấp data kết quả cho C&B và L&D làm đầu vào'],
+        output:'Kết quả đánh giá đầy đủ, đúng hạn — làm đầu vào cho điều chỉnh lương và kế hoạch phát triển.',
+        collab_wf:['wf07'] },
+      { num:'06', name:'Thiết kế cấu trúc đãi ngộ (C&B)',
+        ps:['C&B'],
+        activities:['Thiết kế comp structure và salary bands cạnh tranh','Benchmark thị trường lương định kỳ (theo quý/năm)','Xây dựng bonus scheme gắn với kết quả hiệu suất','Thiết kế benefits package phù hợp với từng nhóm nhân viên'],
+        output:'Cấu trúc đãi ngộ cạnh tranh thị trường, công bằng nội bộ và gắn với hiệu suất.',
+        collab_wf:['wf03','wf08'] },
+      { num:'07', name:'Vận hành lương thưởng & phúc lợi',
+        ps:['C&B'],
+        activities:['Tính lương và xử lý payroll chính xác đúng hạn','Thực thi chính sách thưởng theo kết quả đánh giá','Quản lý, cập nhật và vận hành phúc lợi','Tư vấn điều chỉnh lương theo biến động thị trường'],
+        output:'Lương thưởng chính xác, đúng hạn — nhân viên tin tưởng vào hệ thống đãi ngộ.',
+        collab_wf:['wf08'] },
+      { num:'08', name:'Xây dựng & cập nhật chính sách',
+        ps:['Governance'],
+        activities:['Soạn thảo và cập nhật toàn bộ HR policy','Xây dựng nội quy lao động và quy chế nội bộ','Đảm bảo chính sách luôn align với pháp luật lao động hiện hành','Phổ biến và đào tạo chính sách đến toàn tổ chức'],
+        output:'Hệ thống chính sách rõ ràng, cập nhật — toàn bộ nhân viên hiểu và tuân thủ.',
+        collab_wf:['wf02','wf03'] },
+      { num:'09', name:'Kiểm soát tuân thủ & Audit',
+        ps:['Governance'],
+        activities:['Compliance check định kỳ toàn bộ quy trình nhân sự','Internal audit HR — phát hiện rủi ro sớm','Quản trị rủi ro nhân sự và đề xuất biện pháp','Xử lý hồ sơ pháp lý khi exit, tranh chấp lao động'],
+        output:'Tổ chức không vi phạm pháp luật lao động, rủi ro nhân sự được kiểm soát trước khi leo thang.',
+        collab_wf:['wf05'] },
+    ]
+  },
+];
+
+// PS REFERENCE — all groups
+const PS_GROUPS = [
+  {pillar:'IC',name:'TA — Talent Acquisition',role:'Tuyển dụng & Thu hút nhân tài',items:['Xây dựng chiến lược tuyển dụng theo nhóm vị trí','Sourcing đa kênh: JD, referral, headhunt, events','Employer Branding — thương hiệu nhà tuyển dụng','Vận hành quy trình phỏng vấn và đánh giá','Quản lý trải nghiệm ứng viên (Candidate Experience)','Phân tích thị trường lao động định kỳ','Quản lý đối tác tuyển dụng bên ngoài','Tối ưu quy trình và ATS system']},
+  {pillar:'IC',name:'Headcount Planning',role:'Lập kế hoạch nhân sự',items:['Xác định nhu cầu headcount theo đơn vị và kỳ','Phân tích gap cơ cấu tổ chức hiện tại vs. mục tiêu','Lập headcount plan kèm phân tích chi phí','Theo dõi và cập nhật plan theo biến động thực tế']},
+  {pillar:'IC',name:'Hiring',role:'Vận hành quy trình tuyển dụng',items:['Điều phối end-to-end recruitment process','Đàm phán và chốt offer với ứng viên','Hoàn tất hồ sơ hành chính nhân sự mới','Tracking và báo cáo recruitment metrics']},
+  {pillar:'IC',name:'EPIC Partner (HRBP)',role:'Đối tác nhân sự chiến lược',items:['Tư vấn chiến lược nhân sự cho lãnh đạo đơn vị','Coaching manager về quản lý con người','Dẫn dắt hội nhập và đồng hành nhân viên mới','Facilitate performance review tại đơn vị','Nhận diện sớm rủi ro retention và đề xuất giải pháp','Exit conversation — thu thập insight từ người rời','Kết nối nhu cầu phát triển cá nhân với business need']},
+  {pillar:'IP',name:'LMS — Learning Platform',role:'Nền tảng học tập elearning',items:['Quản lý và vận hành hệ thống elearning','Phân phối nội dung đào tạo online','Quản lý learning path theo vai trò và nhóm','Tracking tiến độ và completion rate','Tích hợp nội dung từ KMS','Báo cáo learning analytics cho EPIC MIS']},
+  {pillar:'IP',name:'KMS — Knowledge Base',role:'Kho tri thức tổ chức',items:['Process Knowledge: quy trình nội bộ chuẩn hóa','Technical Knowledge: kiến thức kỹ thuật theo domain','Biz Knowledge: case study và bài học kinh nghiệm','Thu thập và chuẩn hóa tri thức từ các đơn vị','Duy trì và cập nhật kho tri thức liên tục','Knowledge capture khi nhân sự exit']},
+  {pillar:'IP',name:'L&D — Learning & Development',role:'Đào tạo & Phát triển con người',items:['Training Needs Analysis (TNA) định kỳ','Thiết kế chương trình đào tạo theo nhu cầu','Training campaigns — chiến dịch đào tạo theo chủ đề','Learning Retreat — chương trình đào tạo chuyên sâu','Training on/offline theo yêu cầu từ đơn vị','Phân tích capability gap từ kết quả performance','Đo lường và báo cáo hiệu quả đào tạo','Thiết kế lộ trình nghề nghiệp cho từng nhóm']},
+  {pillar:'IP',name:'EPIC Culture',role:'Xây dựng văn hóa tổ chức EPIC',items:['Thiết kế và triển khai chương trình văn hóa EPIC','Chuẩn hóa hành vi và giá trị cốt lõi','Khảo sát đo lường mức độ thấm văn hóa định kỳ','Sáng kiến văn hóa xuyên tổ chức','Xây dựng learning culture và cộng đồng học tập nội bộ','Ghi nhận và lan tỏa hành vi văn hóa tích cực']},
+  {pillar:'IG',name:'C&B — Compensation & Benefits',role:'Đãi ngộ & Phúc lợi',items:['Thiết kế comp structure và salary bands','Benchmark thị trường lương định kỳ','Xây dựng bonus scheme gắn với hiệu suất','Thiết kế và quản lý benefits package','Tính lương và xử lý payroll đúng hạn','Phân tích chi phí nhân sự và tư vấn điều chỉnh']},
+  {pillar:'IG',name:'Governance — Chính sách & Tuân thủ',role:'Policy, Compliance và Audit nhân sự',items:['Soạn thảo và cập nhật HR policy','Xây dựng nội quy lao động và quy chế nội bộ','Compliance check định kỳ toàn bộ quy trình HR','Internal audit HR — phát hiện rủi ro sớm','Quản trị rủi ro nhân sự','Xử lý hồ sơ pháp lý: exit, tranh chấp lao động']},
+  {pillar:'IG',name:'Performance Review',role:'Hệ thống & vận hành đánh giá hiệu suất',items:['Thiết kế framework đánh giá: KPI / OKR / BMI','Xây dựng chu kỳ review và timeline','Calibration process đảm bảo công bằng xuyên tổ chức','Chuẩn hóa rating scale và tiêu chí','Vận hành chu kỳ review và hỗ trợ manager','Tổng hợp và phân tích kết quả toàn tổ chức']},
+  {pillar:'IG',name:'EPIC MIS — People Analytics',role:'Hệ thống báo cáo & dữ liệu nhân sự',items:['Thiết kế và duy trì data model nhân sự','Thu thập và chuẩn hóa dữ liệu từ các luồng','HR dashboard định kỳ cho lãnh đạo','Phân tích attrition trend và retention risk','Workforce forecast theo kịch bản','Learning analytics: completion rate, effectiveness','Báo cáo performance distribution xuyên tổ chức','Insight on-demand cho lãnh đạo ra quyết định']},
+];
+
+// 9 WORKFLOWS
+const WF_GROUPS = [
+  { label:'VÒNG ĐỜI NHÂN VIÊN', workflows:[
+    { id:'wf01', num:'01', name:'Headcount & Org Plan',
+      desc:'Xác định nhu cầu nhân sự và cơ cấu tổ chức cho kỳ tới. IC chủ đạo với dữ liệu nền từ IG.',
+      steps:[
+        {name:'Xác định nhu cầu headcount', ic:{r:'A',ps:'<strong>Headcount Planning</strong> — lập plan theo đơn vị<br><strong>EPIC Partner</strong> — tư vấn chiến lược nhân sự'}, ip:{r:'C',ps:'<strong>EPIC Culture</strong> — org capability cần xây dựng'}, ig:{r:'R',ps:'<strong>EPIC MIS</strong> — cung cấp data workforce & forecast'}},
+        {name:'Phân tích gap cơ cấu tổ chức', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — advisory cho lãnh đạo đơn vị'}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>EPIC MIS</strong> — data + <strong>Governance</strong> — policy frame'}},
+        {name:'Phê duyệt & truyền thông kế hoạch', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — dẫn dắt với lãnh đạo'}, ip:{r:'I',ps:''}, ig:{r:'C',ps:'<strong>Governance</strong> — compliance cơ cấu'}},
+      ]},
+    { id:'wf02', num:'02', name:'Attract & Source',
+      desc:'Tiếp cận và thu hút ứng viên phù hợp từ thị trường lao động.',
+      steps:[
+        {name:'Xây dựng chiến lược tuyển dụng', ic:{r:'A',ps:'<strong>TA</strong> — phân tích thị trường, xây dựng strategy'}, ip:{r:'I',ps:''}, ig:{r:'C',ps:'<strong>Governance</strong> — compliance quy trình tuyển dụng'}},
+        {name:'Sourcing & Employer Branding', ic:{r:'R',ps:'<strong>TA</strong> — sourcing đa kênh, xây dựng thương hiệu'}, ip:{r:'I',ps:''}, ig:{r:'I',ps:'<strong>EPIC MIS</strong> — tracking pipeline data'}},
+      ]},
+    { id:'wf03', num:'03', name:'Hire & Offer',
+      desc:'Đánh giá ứng viên, ra quyết định tuyển, đàm phán và hoàn tất hợp đồng.',
+      steps:[
+        {name:'Đánh giá & phỏng vấn', ic:{r:'A',ps:'<strong>Hiring</strong> + <strong>TA</strong> — quy trình, trải nghiệm ứng viên'}, ip:{r:'I',ps:''}, ig:{r:'C',ps:'<strong>Governance</strong> — compliance hợp đồng'}},
+        {name:'Ra quyết định tuyển', ic:{r:'R',ps:'<strong>Hiring</strong> + <strong>EPIC Partner</strong> — final decision'}, ip:{r:'I',ps:''}, ig:{r:'C',ps:'<strong>EPIC MIS</strong> — kiểm tra headcount budget'}},
+        {name:'Đàm phán & chốt offer', ic:{r:'A',ps:'<strong>TA</strong> + <strong>Hiring</strong> — đàm phán với ứng viên'}, ip:{r:'I',ps:''}, ig:{r:'R',ps:'<strong>C&B</strong> — comp offer, salary band'}},
+        {name:'Hoàn tất hồ sơ vào HRIS', ic:{r:'I',ps:''}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>EPIC MIS</strong> + <strong>Governance</strong> — hồ sơ & hợp đồng'}},
+      ]},
+    { id:'wf04', num:'04', name:'Onboarding',
+      desc:'Hội nhập tổ chức và công việc trong 90 ngày đầu — IC dẫn dắt con người, IP cung cấp nền tảng kiến thức.',
+      steps:[
+        {name:'Pre-boarding & hành chính', ic:{r:'R',ps:'<strong>Hiring</strong> — hoàn tất thủ tục hành chính'}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>EPIC MIS</strong> + <strong>Governance</strong> — chuẩn hóa quy trình'}},
+        {name:'Hội nhập tổ chức — IPAG Ob', ic:{r:'A',ps:'<strong>EPIC Partner</strong> — dẫn dắt hội nhập tổ chức'}, ip:{r:'R',ps:'<strong>EPIC Culture</strong> — văn hóa & giá trị<br><strong>LMS</strong> + <strong>KMS</strong> — nội dung tổ chức'}, ig:{r:'C',ps:'<strong>EPIC MIS</strong> — tracking tiến độ hội nhập'}},
+        {name:'Hội nhập công việc — Job Ob', ic:{r:'A',ps:'<strong>EPIC Partner</strong> — kết nối với manager & team'}, ip:{r:'R',ps:'<strong>LMS</strong> + <strong>KMS</strong> — process, technical, biz knowledge'}, ig:{r:'I',ps:''}},
+        {name:'30-60-90 day review', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — facilitate check-in & điều chỉnh'}, ip:{r:'C',ps:'<strong>L&D</strong> — điều chỉnh learning path nếu cần'}, ig:{r:'I',ps:'<strong>EPIC MIS</strong> — early engagement signals'}},
+      ]},
+    { id:'wf05', num:'05', name:'Exit & Offboarding',
+      desc:'Quy trình nghỉ việc chuẩn mực — capture kiến thức, phân tích nguyên nhân và lập kế hoạch bổ sung.',
+      steps:[
+        {name:'Nhận & xử lý thông báo nghỉ', ic:{r:'A',ps:'<strong>EPIC Partner</strong> — tiếp nhận & advisory'}, ip:{r:'I',ps:''}, ig:{r:'R',ps:'<strong>EPIC MIS</strong> + <strong>Governance</strong> — kích hoạt quy trình'}},
+        {name:'Exit interview', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — conversation để hiểu nguyên nhân thực sự'}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>EPIC MIS</strong> — thu thập và ghi nhận exit data'}},
+        {name:'Knowledge capture', ic:{r:'I',ps:''}, ip:{r:'A',ps:'<strong>KMS</strong> + <strong>L&D</strong> — capture & cập nhật kho tri thức'}, ig:{r:'R',ps:'<strong>Governance</strong> — documentation & hồ sơ'}},
+        {name:'Offboarding & quyết toán', ic:{r:'C',ps:'<strong>EPIC Partner</strong> — hỗ trợ chuyển giao công việc'}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>C&B</strong> + <strong>Governance</strong> — thanh toán & hồ sơ pháp lý'}},
+        {name:'Backfill plan & phân tích attrition', ic:{r:'R',ps:'<strong>TA</strong> — lập backfill plan<br><strong>EPIC Partner</strong> — phân tích nguyên nhân'}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>EPIC MIS</strong> — exit analytics, attrition trend'}},
+      ]},
+  ]},
+  { label:'PHÁT TRIỂN & HIỆU SUẤT', workflows:[
+    { id:'wf06', num:'06', name:'Learn & Develop',
+      desc:'Phân tích nhu cầu, thiết kế và triển khai chương trình phát triển năng lực liên tục.',
+      steps:[
+        {name:'Training Needs Analysis', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — cung cấp business need từ đơn vị'}, ip:{r:'A',ps:'<strong>L&D</strong> — TNA chuyên sâu và tổng hợp'}, ig:{r:'C',ps:'<strong>EPIC MIS</strong> — performance & skill gap data'}},
+        {name:'Thiết kế chương trình đào tạo', ic:{r:'C',ps:'<strong>EPIC Partner</strong> — input từ nhân viên & manager'}, ip:{r:'A',ps:'<strong>L&D</strong> — design + <strong>KMS</strong> — nội dung'}, ig:{r:'I',ps:''}},
+        {name:'Triển khai đào tạo', ic:{r:'I',ps:''}, ip:{r:'A',ps:'<strong>L&D</strong> — campaigns, retreat, training<br><strong>LMS</strong> — deliver nội dung online'}, ig:{r:'I',ps:'<strong>EPIC MIS</strong> — tracking completion rate'}},
+        {name:'Đo lường hiệu quả', ic:{r:'C',ps:'<strong>EPIC Partner</strong> — feedback từ lãnh đạo đơn vị'}, ip:{r:'R',ps:'<strong>L&D</strong> — evaluate impact'}, ig:{r:'A',ps:'<strong>EPIC MIS</strong> — learning analytics & báo cáo'}},
+      ]},
+    { id:'wf07', num:'07', name:'Perform & Review',
+      desc:'Vận hành chu kỳ đánh giá hiệu suất — IG thiết kế & vận hành hệ thống, IC dẫn dắt thực thi tại đơn vị.',
+      steps:[
+        {name:'Thiết kế framework & chu kỳ', ic:{r:'C',ps:'<strong>EPIC Partner</strong> — liên kết với business reality'}, ip:{r:'C',ps:'<strong>L&D</strong> — competency framework'}, ig:{r:'A',ps:'<strong>Performance Review</strong> — thiết kế hệ thống đánh giá'}},
+        {name:'Vận hành chu kỳ review', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — coach manager, facilitate tại đơn vị'}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>Performance Review</strong> — điều phối quy trình & timeline'}},
+        {name:'Calibration & phân tích', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — đảm bảo fairness, tư vấn'}, ip:{r:'C',ps:'<strong>L&D</strong> — phân tích capability gap từ kết quả'}, ig:{r:'A',ps:'<strong>EPIC MIS</strong> — data, phân tích phân bổ kết quả'}},
+        {name:'Công bố kết quả', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — communicate với nhân viên'}, ip:{r:'C',ps:'<strong>L&D</strong> — đề xuất development plan'}, ig:{r:'A',ps:'<strong>Performance Review</strong> + <strong>EPIC MIS</strong> — lưu trữ & báo cáo'}},
+      ]},
+    { id:'wf08', num:'08', name:'Reward & Adjust',
+      desc:'Điều chỉnh lương thưởng gắn với kết quả hiệu suất — IG chủ đạo với tư vấn từ IC.',
+      steps:[
+        {name:'Phân tích & benchmark lương', ic:{r:'C',ps:'<strong>EPIC Partner</strong> — retention insight từ đơn vị'}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>C&B</strong> — benchmark thị trường'}},
+        {name:'Đề xuất điều chỉnh lương', ic:{r:'C',ps:'<strong>EPIC Partner</strong> — equity & risk tư vấn'}, ip:{r:'C',ps:'<strong>L&D</strong> — development-linked reward'}, ig:{r:'A',ps:'<strong>C&B</strong> + dữ liệu từ <strong>Performance Review</strong>'}},
+        {name:'Phê duyệt & thực thi payroll', ic:{r:'I',ps:''}, ip:{r:'I',ps:''}, ig:{r:'A',ps:'<strong>C&B</strong> + <strong>Governance</strong> — approval & payroll'}},
+      ]},
+  ]},
+  { label:'MÔI TRƯỜNG & QUẢN TRỊ', workflows:[
+    { id:'wf09', num:'09', name:'Engage & Culture',
+      desc:'Xây dựng văn hóa và duy trì gắn kết — IP thiết kế chương trình, IC thực thi điểm chạm, IG đo lường.',
+      steps:[
+        {name:'Khảo sát văn hóa & gắn kết', ic:{r:'C',ps:'<strong>EPIC Partner</strong> — context từ nhân viên thực địa'}, ip:{r:'A',ps:'<strong>EPIC Culture</strong> — thiết kế khảo sát & nội dung'}, ig:{r:'R',ps:'<strong>EPIC MIS</strong> — thu thập & chuẩn hóa data'}},
+        {name:'Phân tích kết quả & insight', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — đọc tín hiệu từ nhân viên'}, ip:{r:'A',ps:'<strong>EPIC Culture</strong> — phân tích văn hóa & engagement'}, ig:{r:'R',ps:'<strong>EPIC MIS</strong> — dashboard & báo cáo lãnh đạo'}},
+        {name:'Thiết kế sáng kiến gắn kết', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — đề xuất từ thực tế đơn vị'}, ip:{r:'A',ps:'<strong>EPIC Culture</strong> + <strong>L&D</strong> — thiết kế chương trình'}, ig:{r:'I',ps:''}},
+        {name:'Triển khai & đo lường impact', ic:{r:'R',ps:'<strong>EPIC Partner</strong> — thực thi điểm chạm nhân viên'}, ip:{r:'A',ps:'<strong>EPIC Culture</strong> — vận hành chương trình văn hóa'}, ig:{r:'C',ps:'<strong>EPIC MIS</strong> — đo lường impact, engagement score'}},
+      ]},
+  ]},
+];
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let SEC='ov', PILLAR='IC', openTasks=new Set(), openWFs=new Set(), allExp=false, psFlt='all';
+
+function pv(id){ return {c:`var(--${id.toLowerCase()})`,l:`var(--${id.toLowerCase()}-l)`,b:`var(--${id.toLowerCase()}-b)`,d:`var(--${id.toLowerCase()}-d)`}; }
+function P(id){ return PILLARS.find(p=>p.id===id); }
+
+// ══════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════
+function goSec(id){
+  SEC=id;
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  document.querySelectorAll('.nb').forEach(b=>{ if(b.getAttribute('onclick')===`goSec('${id}')`) b.classList.add('on'); });
+}
+window.goSec=goSec;
+
+// ══════════════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════════════
+function renderOV(){
+  const totalPS = PS_GROUPS.length;
+  const totalItems = PS_GROUPS.reduce((s,g)=>s+g.items.length,0);
+  document.getElementById('ov-stats').innerHTML=[
+    {n:3,l:'Trụ cột iLEAD'},{n:12,l:'Nhóm PS'},{n:totalItems,l:'Dịch vụ cụ thể'},
+    {n:WF_GROUPS.reduce((s,g)=>s+g.workflows.length,0),l:'Luồng phối hợp'},
+    {n:WF_GROUPS.reduce((s,g)=>s+g.workflows.reduce((a,w)=>a+w.steps.length,0),0),l:'Bước quy trình'},
+  ].map(s=>`<div class="stat"><div class="stat-n">${s.n}</div><div class="stat-l">${s.l}</div></div>`).join('');
+
+  document.getElementById('ov-pillars').innerHTML=PILLARS.map(p=>{
+    const cv=pv(p.id);
+    const chips=p.components.map(c=>`<span class="ps-chip" style="background:${cv.l};color:${cv.c};border-color:${cv.b}" title="${p.component_desc[c]}">${c}</span>`).join('');
+    return `<div class="pcard" style="border-color:${cv.b}">
+      <div class="pcard-head" style="background:${cv.l}">
+        <div class="pcard-tag" style="color:${cv.c}">${p.id}</div>
+        <div class="pcard-name" style="color:${cv.c}">${p.name}</div>
+        <div class="pcard-desc" style="color:${cv.c}">${p.desc}</div>
+      </div>
+      <div class="pcard-body" style="border-color:${cv.b}">
+        <div class="pcard-body-lbl" style="color:${cv.c}">THÀNH PHẦN</div>
+        ${chips}
+      </div>
+    </div>`;
+  }).join('');
+
+  const flows=[
+    {f:'IC',t:'IP',desc:'Nhu cầu đào tạo từ đơn vị → L&D thiết kế chương trình phù hợp'},
+    {f:'IC',t:'IG',desc:'Dữ liệu engagement từ nhân viên → EPIC MIS phân tích attrition risk'},
+    {f:'IP',t:'IG',desc:'Kết quả học tập (LMS) → EPIC MIS báo cáo learning analytics'},
+    {f:'IP',t:'IC',desc:'Development plan từ L&D → EPIC Partner coaching nhân viên'},
+    {f:'IG',t:'IC',desc:'Data workforce & forecast → Headcount Planning và advisory'},
+    {f:'IG',t:'IP',desc:'Performance data → L&D phân tích gap và điều chỉnh chương trình'},
+  ];
+  document.getElementById('ov-flows').innerHTML=flows.map(f=>{
+    const fc=pv(f.f),tc=pv(f.t);
+    return `<div class="flow-row">
+      <span class="flow-tag" style="background:${fc.l};color:${fc.c}">${f.f}</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-tag" style="background:${tc.l};color:${tc.c}">${f.t}</span>
+      <span class="flow-desc">${f.desc}</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+// MY PILLAR
+// ══════════════════════════════════════════════════
+function renderMP(){
+  const p=P(PILLAR); const cv=pv(p.id);
+  // selector
+  document.getElementById('mp-selector').innerHTML=PILLARS.map(pl=>{
+    const pv2=pv(pl.id); const isOn=pl.id===PILLAR;
+    return `<button class="ps-sel-btn${isOn?` on-${pl.id.toLowerCase()}`:''}" onclick="setPillar('${pl.id}')">
+      <span class="ps-sel-dot" style="background:${pv2.c}"></span>
+      ${pl.short}
+      <span class="ps-sel-cnt">${pl.tasks.length} nhiệm vụ</span>
+    </button>`;
+  }).join('');
+  // summary
+  document.getElementById('mp-summary').innerHTML=`
+    <div class="pillar-summary" style="background:${cv.l};border-color:${cv.b};margin-bottom:20px">
+      <div class="ps-smry-top">
+        <span class="ps-smry-badge" style="background:${cv.c};color:#fff">${p.id}</span>
+        <div class="ps-smry-desc" style="color:${cv.d}">${p.desc}</div>
+      </div>
+      <div class="ps-smry-chips">${p.components.map(c=>`
+        <span class="ps-smry-chip" style="background:rgba(255,255,255,.7);color:${cv.c};border-color:${cv.b}" title="${p.component_desc[c]}">
+          ${c}
+          <span style="opacity:.55;margin-left:4px;font-size:10px">— ${p.component_desc[c]}</span>
+        </span>`).join('')}
+      </div>
+    </div>`;
+  // tasks
+  document.getElementById('mp-tasks').innerHTML=p.tasks.map((t,ti)=>{
+    const tid=`${p.id}_${ti}`;
+    const isOpen=openTasks.has(tid);
+    const psTags=t.ps.map(s=>`<span class="tc-ps-tag" style="background:${cv.l};color:${cv.c};border-color:${cv.b}">${s}</span>`).join('');
+    const wfLinks=t.collab_wf.map(wid=>{
+      const proc=WF_GROUPS.flatMap(g=>g.workflows).find(w=>w.id===wid);
+      return proc?`<span class="tc-xref-tag" style="background:var(--bg);color:var(--t2);border-color:var(--bdr)" onclick="goToWF('${wid}')" title="Xem trong luồng phối hợp">${proc.num} · ${proc.name} ↗</span>`:''
+    }).join('');
+    return `<div class="task-card">
+      <div class="tc-hd" onclick="toggleTask('${tid}')">
+        <div class="tc-num" style="background:${cv.l};color:${cv.c}">${t.num}</div>
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-meta">${psTags}</div>
+        <span class="tc-tgl${isOpen?' open':''}">▼</span>
+      </div>
+      <div class="tc-body${isOpen?' open':''}">
+        <div class="tc-2col">
+          <div class="tc-col" style="background:${cv.l};border-color:${cv.b}">
+            <div class="tc-col-lbl" style="color:${cv.c}">HOẠT ĐỘNG CỤ THỂ</div>
+            <ul class="tc-items">${t.activities.map(a=>`<li>${a}</li>`).join('')}</ul>
+          </div>
+          <div class="tc-col" style="background:#FAFBFD;border-color:var(--bdr)">
+            <div class="tc-col-lbl">OUTPUT KỲ VỌNG</div>
+            <div class="tc-output-val" style="font-size:12px;color:var(--t2);line-height:1.65">${t.output}</div>
+          </div>
+        </div>
+        ${wfLinks?`<div class="tc-xref">
+          <div class="tc-xref-lbl">LIÊN QUAN ĐẾN LUỒNG PHỐI HỢP</div>
+          <div class="tc-xref-tags">${wfLinks}</div>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setPillar(id){ PILLAR=id; openTasks.clear(); renderMP(); }
+function toggleTask(tid){ if(openTasks.has(tid)) openTasks.delete(tid); else openTasks.add(tid); renderMP(); }
+window.setPillar=setPillar; window.toggleTask=toggleTask;
+
+function goToWF(wid){ openWFs.add(wid); goSec('co'); renderCO(); setTimeout(()=>{ const el=document.getElementById('card_'+wid); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); },100); }
+window.goToWF=goToWF;
+
+// ══════════════════════════════════════════════════
+// COLLABORATION
+// ══════════════════════════════════════════════════
+function renderCO(){
+  const allWFIds=WF_GROUPS.flatMap(g=>g.workflows.map(w=>w.id));
+  document.getElementById('expand-btn').textContent=allExp?'Collapse tất cả':'Expand tất cả';
+  const icV=pv('IC'),ipV=pv('IP'),igV=pv('IG');
+
+  document.getElementById('wf-container').innerHTML=WF_GROUPS.map(grp=>`
+    <div class="wf-group-label">${grp.label}</div>
+    ${grp.workflows.map(wf=>{
+      const isOpen=openWFs.has(wf.id);
+      const allR=new Set(wf.steps.flatMap(s=>['ic','ip','ig'].map(k=>s[k]?.r).filter(Boolean)));
+      const badges=['R','A','C','I'].filter(v=>allR.has(v)).map(v=>`<span class="wf-rbadge" style="background:var(--${v}-bg);color:var(--${v}-c);width:20px;height:20px;font-size:10px">${v}</span>`).join('');
+
+      const rows=wf.steps.map((step,si)=>{
+        const cols=['ic','ip','ig'].map(k=>{
+          const cell=step[k]; const pid=k.toUpperCase(); const cv2=pv(pid);
+          if(!cell?.r) return `<td class="td-${k}"><div class="cell-empty">·</div></td>`;
+          return `<td class="td-${k}">
+            <div class="raci-cell-inner">
+              <div class="raci-row">
+                <span class="rbadge" style="background:var(--${cell.r}-bg);color:var(--${cell.r}-c)">${cell.r}</span>
+                <span class="raci-ps">${cell.ps}</span>
+              </div>
+            </div>
+          </td>`;
+        }).join('');
+        return `<tr>
+          <td class="td-step"><span class="step-n">${si+1}</span><span class="step-nm">${step.name}</span></td>
+          ${cols}
+        </tr>`;
+      }).join('');
+
+      return `<div class="wf-card" id="card_${wf.id}">
+        <div class="wf-hd" onclick="toggleWF('${wf.id}')">
+          <div class="wf-num">${wf.num}</div>
+          <div class="wf-name">${wf.name}</div>
+          <div class="wf-summary-badges">${badges}</div>
+          <span class="wf-tgl${isOpen?' open':''}">▼</span>
+        </div>
+        <div class="wf-body${isOpen?' open':''}">
+          <div class="wf-desc">${wf.desc}</div>
+          <div class="wf-tbl-wrap">
+            <table class="wft">
+              <thead><tr>
+                <th class="th-step">BƯỚC</th>
+                <th class="th-ic">IC — iLead Care</th>
+                <th class="th-ip">IP — iLead Professional</th>
+                <th class="th-ig">IG — iLead Governance</th>
+              </tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+  `).join('');
+}
+
+function toggleWF(id){ if(openWFs.has(id)) openWFs.delete(id); else openWFs.add(id); renderCO(); }
+function toggleExpandAll(){
+  const all=WF_GROUPS.flatMap(g=>g.workflows.map(w=>w.id));
+  if(allExp){ openWFs.clear(); allExp=false; } else { all.forEach(id=>openWFs.add(id)); allExp=true; }
+  renderCO();
+}
+window.toggleWF=toggleWF; window.toggleExpandAll=toggleExpandAll;
+
+// ══════════════════════════════════════════════════
+// PS REFERENCE
+// ══════════════════════════════════════════════════
+function renderPSFilter(){
+  document.getElementById('ps-flt').innerHTML=
+    `<button class="flt-btn${psFlt==='all'?'" style="background:var(--t1);color:#fff;border-color:var(--t1)':'"'} onclick="setPSF('all')">Tất cả</button>`+
+    PILLARS.map(p=>{const cv=pv(p.id);return `<button class="flt-btn" style="${psFlt===p.id?`background:${cv.c};color:#fff;border-color:${cv.c}`:''}" onclick="setPSF('${p.id}')">${p.id}</button>`;}).join('');
+}
+function setPSF(f){ psFlt=f; renderPSFilter(); renderPSGrid(); }
+window.setPSF=setPSF;
+
+function filterPS(){ renderPSGrid(document.getElementById('ps-q').value.toLowerCase()); }
+window.filterPS=filterPS;
+
+function renderPSGrid(q=''){
+  const shown=PS_GROUPS.filter(g=>{
+    const mp=psFlt==='all'||g.pillar===psFlt;
+    const mq=!q||g.name.toLowerCase().includes(q)||g.role.toLowerCase().includes(q)||g.items.some(i=>i.toLowerCase().includes(q));
+    return mp&&mq;
+  });
+  const hl=q?(t)=>t.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'),'<mark style="background:#FFF3CD;border-radius:2px;padding:0 1px">$1</mark>'):t=>t;
+  document.getElementById('ps-grid').innerHTML=shown.map(g=>{
+    const cv=pv(g.pillar);
+    return `<div class="ps-ref-card">
+      <div class="prc-head" style="background:${cv.l}">
+        <div class="prc-pillar" style="color:${cv.c}">${g.pillar} — ${PILLARS.find(p=>p.id===g.pillar).short}</div>
+        <div class="prc-name" style="color:${cv.c}">${g.name}</div>
+        <div class="prc-role" style="color:${cv.c}">${g.role}</div>
+      </div>
+      <div class="prc-body">
+        <ul class="prc-items">${g.items.map((item,i)=>`<li><span class="prc-n">${String(i+1).padStart(2,'0')}</span><span>${hl(item)}</span></li>`).join('')}</ul>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+renderOV();
+renderMP();
+renderCO();
+renderPSFilter(); renderPSGrid();
+</script>
+</body>
+</html>
