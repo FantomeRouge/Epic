@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPAX Way — La bàn Phát triển Tích hợp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06111E;--bg-s:#0B1826;--bg-card:#0F2035;--bg-card-h:#142844;
+  --gold:#C9A53F;--gold-d:rgba(201,165,63,.18);--gold-dd:rgba(201,165,63,.07);
+  --cream:#EAE0D2;--cream-d:rgba(234,224,210,.65);--cream-m:rgba(234,224,210,.32);
+  --ci:#4A9FD8;--cp:#9B7FD4;--ca:#4DAA7C;--cx:#C9A53F;
+  --bdr:rgba(201,165,63,.13);--bdr-h:rgba(201,165,63,.32)
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.65;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 40% at 50% -5%,rgba(201,165,63,.06) 0%,transparent 65%)}
+
+.hero{text-align:center;padding:68px 24px 48px;max-width:820px;margin:0 auto}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:block}
+.hero-title{font-family:'Cormorant Garant',serif;font-size:clamp(48px,7.5vw,80px);font-weight:300;line-height:1;color:var(--cream);letter-spacing:-.02em;margin-bottom:6px}
+.hero-title em{color:var(--gold);font-style:italic}
+.hero-tagline{font-family:'Cormorant Garant',serif;font-size:clamp(15px,2.2vw,20px);font-weight:300;font-style:italic;color:var(--cream-d);margin-bottom:28px}
+
+.intro-block{background:var(--bg-s);border:1px solid var(--bdr);border-radius:10px;padding:20px 24px;text-align:left;max-width:700px;margin:0 auto 28px;font-size:13.5px;color:var(--cream-d);line-height:1.8}
+.intro-block strong{color:var(--cream);font-weight:400}
+
+.reading-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.r-pill{display:flex;align-items:center;gap:7px;padding:9px 16px;border:1px solid var(--bdr);border-radius:40px;background:var(--bg-s);font-family:'DM Mono',monospace;font-size:10px;color:var(--cream-m);letter-spacing:.05em}
+.r-pill .ra{color:var(--gold);font-size:14px}
+
+.page-body{max-width:1100px;margin:0 auto;padding:40px 24px 80px}
+.tab-nav{display:flex;gap:2px;border-bottom:1px solid var(--bdr);margin-bottom:28px}
+.tab-btn{background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;color:var(--cream-m);padding:11px 18px;letter-spacing:.06em;position:relative;transition:color .18s}
+.tab-btn::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .18s}
+.tab-btn.active{color:var(--cream)}
+.tab-btn.active::after{transform:scaleX(1)}
+.tab-btn:hover{color:var(--cream-d)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* MATRIX */
+.matrix-wrap{display:grid;grid-template-columns:120px repeat(4,1fr);gap:2px;background:var(--bdr);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:18px}
+
+.m-corner{background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px 8px}
+.m-corner-txt{font-family:'Cormorant Garant',serif;font-size:22px;font-weight:300;color:var(--gold);letter-spacing:.08em}
+
+.col-hd{background:var(--bg-s);padding:16px 12px;text-align:center;border-top:3px solid var(--cc,var(--gold))}
+.ch-code{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--cc,var(--gold));text-transform:uppercase;display:block;margin-bottom:5px}
+.ch-name{font-family:'Cormorant Garant',serif;font-size:19px;font-weight:300;color:var(--cream);display:block;line-height:1.1;margin-bottom:2px}
+.ch-sub{font-size:10px;color:var(--cream-m);font-style:italic;display:block}
+
+.row-hd{background:var(--bg-s);padding:14px 10px;display:flex;flex-direction:column;justify-content:center;border-left:3px solid var(--rc,var(--bdr-h))}
+.rh-code{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--rc,var(--cream));letter-spacing:.05em;display:block;margin-bottom:4px}
+.rh-sub{font-size:10px;color:var(--cream-m);line-height:1.4;font-style:italic}
+
+.m-cell{background:var(--bg-card);padding:15px 13px;cursor:pointer;position:relative;border-left:2px solid transparent;transition:background .16s,border-left-color .16s}
+.m-cell:hover{background:var(--bg-card-h)}
+.m-cell.sel{background:var(--bg-card-h);border-left-color:var(--cc2,var(--gold))}
+.cell-name{font-family:'Cormorant Garant',serif;font-size:16px;font-weight:600;color:var(--cc2,var(--cream));display:block;margin-bottom:6px;line-height:1.1}
+.cell-desc{font-size:12px;color:var(--cream-d);line-height:1.6}
+.cell-hint{position:absolute;bottom:7px;right:9px;font-family:'DM Mono',monospace;font-size:9px;color:var(--cream-m);opacity:0;transition:opacity .16s}
+.m-cell:hover .cell-hint{opacity:1}
+
+/* DETAIL */
+.detail{background:var(--bg-s);border:1px solid var(--bdr-h);border-radius:10px;padding:24px 26px;margin-bottom:16px;display:none}
+.detail.show{display:block;animation:fd .18s ease}
+@keyframes fd{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.d-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.d-bc{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:var(--cream-m);text-transform:uppercase}
+.d-concept{font-family:'Cormorant Garant',serif;font-size:40px;font-weight:300;line-height:1;margin-bottom:14px}
+.d-desc{font-size:15px;color:var(--cream-d);line-height:1.85}
+.close-btn{background:none;border:1px solid var(--bdr);border-radius:50%;width:28px;height:28px;flex-shrink:0;cursor:pointer;color:var(--cream-m);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .16s;margin-top:-2px}
+.close-btn:hover{border-color:var(--bdr-h);color:var(--cream)}
+
+/* LOGIC */
+.logic-card{background:var(--bg-s);border:1px solid var(--gold-d);border-radius:10px;padding:22px 24px}
+.logic-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:16px}
+.logic-rows{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.logic-row{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:8px;border-left:3px solid var(--lc,var(--bdr));background:rgba(255,255,255,.02)}
+.l-text{font-size:13px;color:var(--cream-d);line-height:1.65}
+.l-text strong{font-weight:400;color:var(--lc,var(--cream))}
+.logic-bmi{padding:12px 14px;border-radius:8px;border-left:3px solid var(--gold-d);background:var(--gold-dd);font-size:13px;color:var(--cream-d);margin-bottom:12px}
+.logic-bmi strong{color:var(--gold);font-weight:400}
+.logic-seq{font-size:12.5px;color:var(--cream-d);border-top:1px solid var(--bdr);padding-top:12px;line-height:1.65}
+
+/* REFLECT */
+.ref-head{margin-bottom:22px}
+.ref-head h2{font-family:'Cormorant Garant',serif;font-size:32px;font-weight:300;color:var(--cream);margin-bottom:4px}
+.ref-head p{font-size:12px;color:var(--cream-m);font-style:italic}
+.ref-list{display:flex;flex-direction:column;gap:8px}
+
+.ref-item{background:var(--bg-card);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;transition:border-color .18s}
+.ref-item.open{border-color:var(--rc3,var(--bdr-h))}
+
+.ref-trig{width:100%;background:none;border:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:16px;text-align:left;transition:background .16s}
+.ref-trig:hover{background:rgba(255,255,255,.02)}
+
+.ref-badge{flex-shrink:0;width:52px;height:52px;border-radius:50%;background:var(--rc3-d,rgba(255,255,255,.04));border:1px solid var(--rc3,var(--bdr));display:flex;align-items:center;justify-content:center}
+.ref-badge-txt{font-family:'Cormorant Garant',serif;font-size:13px;font-weight:600;color:var(--rc3,var(--cream));text-align:center;line-height:1.2}
+
+.ref-trig-body{flex:1}
+.ref-trig-code{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;color:var(--rc3,var(--gold));text-transform:uppercase;display:block;margin-bottom:2px}
+.ref-trig-sub{font-size:11px;color:var(--cream-m);display:block;margin-bottom:5px}
+.ref-trig-q{font-family:'Cormorant Garant',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--cream);line-height:1.3}
+
+.ref-arrow{flex-shrink:0;width:28px;height:28px;border:1px solid var(--bdr);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--cream-m);font-size:11px;transition:transform .18s}
+.ref-item.open .ref-arrow{transform:rotate(180deg)}
+
+.ref-body{display:none;padding:0 22px 22px}
+.ref-item.open .ref-body{display:block;animation:fd .18s ease}
+.ref-divider{height:1px;background:var(--bdr);margin-bottom:18px}
+
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.q-card{background:rgba(255,255,255,.025);border:1px solid var(--bdr);border-radius:8px;padding:14px}
+.q-card.commit{background:var(--gold-dd);border-color:var(--gold-d)}
+.q-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--rc3,var(--gold));display:block;margin-bottom:7px;letter-spacing:.1em}
+.q-card.commit .q-num{color:var(--gold)}
+.q-txt{font-size:12.5px;color:var(--cream-d);line-height:1.65}
+
+.bmi-tag{display:inline-flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--rc3-d,rgba(255,255,255,.03));border:1px solid var(--rc3,var(--bdr));border-radius:8px}
+.bmi-lbl{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.15em;color:var(--rc3,var(--gold));text-transform:uppercase;flex-shrink:0;padding-top:2px}
+.bmi-txt{font-size:12.5px;color:var(--cream-d);line-height:1.6}
+.bmi-txt strong{color:var(--rc3,var(--cream));font-weight:400}
+
+@media(max-width:760px){
+  .matrix-wrap{grid-template-columns:80px repeat(4,1fr)}
+  .ch-name{font-size:14px}
+  .cell-name{font-size:13px}
+  .cell-desc{font-size:11px}
+  .q-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">IPAG Group · iLead Governance</span>
+  <h1 class="hero-title">IPAX <em>Way</em></h1>
+  <p class="hero-tagline">La bàn Phát triển Tích hợp</p>
+
+  <div class="intro-block">
+    IPAX = Tâm · Tầm · Trí — 3 chiều phát triển của con người.<br>
+    <strong>Đọc dọc:</strong> Tâm (I — thấy đúng) → Tầm (P — nhận thức đúng) → Trí (A — hành động đúng) → X (BMI — biểu hiện ra ngoài).<br>
+    <strong>Đọc ngang:</strong> IPAM (hiểu bản thân) · IPAG (hiểu tổ chức) · IPAC (hiểu sự nghiệp).
+  </div>
+
+  <div class="reading-row">
+    <span class="r-pill"><span class="ra">↓</span> Đọc dọc: Tâm → Tầm → Trí → X</span>
+    <span class="r-pill"><span class="ra">→</span> Đọc ngang: IPAM → IPAG → IPAC</span>
+  </div>
+</header>
+
+<div class="page-body">
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="goTab('matrix',this)">Ma trận IPAX</button>
+    <button class="tab-btn" onclick="goTab('reflect',this)">IPAX Reflect · Phản tư</button>
+  </nav>
+
+  <!-- MATRIX PANE -->
+  <div class="tab-pane active" id="pane-matrix">
+
+    <div class="detail" id="detail">
+      <div class="d-top">
+        <div>
+          <p class="d-bc" id="d-bc"></p>
+          <p class="d-concept" id="d-concept"></p>
+        </div>
+        <button class="close-btn" onclick="closeD()">✕</button>
+      </div>
+      <p class="d-desc" id="d-desc"></p>
+    </div>
+
+    <div class="matrix-wrap" id="matrix-wrap">
+      <div class="m-corner"><span class="m-corner-txt">IPAX</span></div>
+      <div class="col-hd" style="--cc:var(--ci)">
+        <span class="ch-code">I</span>
+        <span class="ch-name">Tâm (I)</span>
+        <span class="ch-sub">Thấy đúng</span>
+      </div>
+      <div class="col-hd" style="--cc:var(--cp)">
+        <span class="ch-code">P</span>
+        <span class="ch-name">Tầm (P)</span>
+        <span class="ch-sub">Nhận thức đúng</span>
+      </div>
+      <div class="col-hd" style="--cc:var(--ca)">
+        <span class="ch-code">A</span>
+        <span class="ch-name">Trí (A)</span>
+        <span class="ch-sub">Hành động đúng</span>
+      </div>
+      <div class="col-hd" style="--cc:var(--cx)">
+        <span class="ch-code">X</span>
+        <span class="ch-name">X — BMI</span>
+        <span class="ch-sub">Biểu hiện ra ngoài</span>
+      </div>
+    </div>
+
+    <div class="logic-card">
+      <span class="logic-lbl">Logic IPAX</span>
+      <div class="logic-rows">
+        <div class="logic-row" style="--lc:var(--ci)">
+          <span class="l-text"><strong>Có Tâm (Insight · Integration · Identity)</strong> → thấy đúng bản thân + tổ chức + sự nghiệp.</span>
+        </div>
+        <div class="logic-row" style="--lc:var(--cp)">
+          <span class="l-text"><strong>Có Tầm (Perception · Partnership · Position)</strong> → nhận thức đúng bản thân + tổ chức + sự nghiệp.</span>
+        </div>
+        <div class="logic-row" style="--lc:var(--ca)">
+          <span class="l-text"><strong>Có Trí (Awakening · Accountability · Achievement)</strong> → hành động đúng bản thân + tổ chức + sự nghiệp.</span>
+        </div>
+      </div>
+      <div class="logic-bmi"><strong>Biểu hiện ra X = BMI:</strong> Mindfulness (M) · Greatness (G) · Connection (C).</div>
+      <p class="logic-seq">Phải hiểu bản thân trước (IPAM) → tổ chức (IPAG) → sự nghiệp (IPAC).</p>
+    </div>
+  </div>
+
+  <!-- REFLECT PANE -->
+  <div class="tab-pane" id="pane-reflect">
+    <div class="ref-head">
+      <h2>IPAX Reflect</h2>
+      <p>Tâm (IPAM) · Tầm (IPAG) · Trí (IPAC)</p>
+    </div>
+    <div class="ref-list" id="ref-list"></div>
+  </div>
+</div>
+
+<script>
+const ROWS=[
+  {code:'IPAM',sub:'Hiểu bản thân', color:'#D4954A'},
+  {code:'IPAG',sub:'Hiểu tổ chức',  color:'#4AA5D4'},
+  {code:'IPAC',sub:'Hiểu sự nghiệp',color:'#C96A4A'}
+];
+const COLS=[
+  {code:'I',name:'Tâm (I)',  sub:'Thấy đúng',         cssVar:'var(--ci)',hex:'#4A9FD8'},
+  {code:'P',name:'Tầm (P)',  sub:'Nhận thức đúng',    cssVar:'var(--cp)',hex:'#9B7FD4'},
+  {code:'A',name:'Trí (A)',  sub:'Hành động đúng',    cssVar:'var(--ca)',hex:'#4DAA7C'},
+  {code:'X',name:'X — BMI', sub:'Biểu hiện ra ngoài', cssVar:'var(--cx)',hex:'#C9A53F'}
+];
+
+/* Verbatim từ tài liệu */
+const CELLS=[
+  {name:'Insight',      desc:'Tự nhìn thấy bản thân rõ ràng, không bị méo bởi ego hay nỗi sợ.'},
+  {name:'Perception',   desc:'Nhận thức về bản thân đúng như thực — không tô hồng, không hạ thấp.'},
+  {name:'Awakening',    desc:'Tỉnh thức — nhận ra khi nào mình đang react vs chọn lựa có ý thức.'},
+  {name:'Mindfulness',  desc:'Hiện diện trọn vẹn — không phải chỉ có mặt. Biểu hiện ra BMI M.'},
+  {name:'Integration',    desc:'Thấy và kết nối các mảnh rời rạc của tổ chức thành tổng thể có ý nghĩa.'},
+  {name:'Partnership',    desc:'Nhận thức về chất lượng quan hệ — xây dựng tin tưởng thực sự, không performative.'},
+  {name:'Accountability', desc:'Hành động trách nhiệm vì tự trọng — không phải vì sợ hậu quả.'},
+  {name:'Greatness',      desc:'Đóng góp vào điều lớn hơn bản thân. Biểu hiện ra BMI G.'},
+  {name:'Identity',    desc:'Biết rõ mình là ai trong sự nghiệp — giá trị, thế mạnh, điều không thỏa hiệp.'},
+  {name:'Position',    desc:'Định vị đúng trong nghề nghiệp — nhận thức rõ mình đứng ở đâu và tại sao.'},
+  {name:'Achievement', desc:'Tạo ra Output → Outcome → Impact → Legacy. Hành động tạo dấu ấn bền vững.'},
+  {name:'Connection',  desc:'Quan hệ được xây trên giá trị thực. Biểu hiện ra BMI C.'}
+];
+
+/* Verbatim từ tài liệu */
+const REFLECT=[
+  {
+    axis:'TÂM · I', badge:'Tâm\nI',
+    sub:'IPAM · Hiểu bản thân · Thấy đúng',
+    q:'Tôi đang thật sự thấy rõ bản thân mình không?',
+    qs:[
+      'Tôi đang thấy rõ điểm mạnh và điểm yếu thực sự của mình không — hay đang tô hồng hoặc hạ thấp?',
+      'Trong 3 tháng qua, tôi trưởng thành ở điều gì — không phải kết quả, mà là cách tôi nhìn và phản ứng?',
+      'Điều gì đang ngăn tôi thấy rõ bản thân — nỗi sợ, kỳ vọng người khác, hay thói quen tự bảo vệ?',
+      '1 action cụ thể tôi commit trong 30 ngày để Tâm sáng hơn là gì?'
+    ],
+    bmi:'M · Mindfulness', bmiSub:'Hiện diện trọn vẹn. BMI Forming → L1',
+    color:'#4A9FD8', dim:'rgba(74,159,216,.11)'
+  },
+  {
+    axis:'TẦM · P', badge:'Tầm\nP',
+    sub:'IPAG · Hiểu tổ chức · Nhận thức đúng',
+    q:'Tôi đang nhận thức đúng về tổ chức và vị trí của mình chưa?',
+    qs:[
+      'Tôi hiểu EPIC đang vận hành vì điều gì — và điều đó kết nối với công việc tôi làm hôm nay như thế nào?',
+      'Chất lượng quan hệ với đồng nghiệp trong FC/OC đang ở đâu — được xây trên tin tưởng thật hay trên lịch sự bề mặt?',
+      'Tôi đang nhận thức đúng về vị trí của mình trong tổ chức — hay overestimate hoặc underestimate đóng góp?',
+      '1 action cụ thể tôi commit trong 30 ngày để Tầm rộng hơn là gì?'
+    ],
+    bmi:'G · Greatness', bmiSub:'Đóng góp vào điều lớn hơn. BMI Developing → L1–L2',
+    color:'#9B7FD4', dim:'rgba(155,127,212,.11)'
+  },
+  {
+    axis:'TRÍ · A', badge:'Trí\nA',
+    sub:'IPAC · Hiểu sự nghiệp · Hành động đúng',
+    q:'Tôi đang hành động đúng với sự nghiệp tôi muốn xây dựng chưa?',
+    qs:[
+      'Tôi có đang tỉnh thức về các quyết định sự nghiệp — hay để hoàn cảnh dẫn dắt thay vì chủ động chọn?',
+      'Tôi đang chịu trách nhiệm với ICM của mình vì tự trọng — hay vì sợ đánh giá từ người khác?',
+      'Output tôi tạo ra trong quý này là Output (đầu ra), Outcome (kết quả thật), hay Impact (thay đổi gì đó bền vững)?',
+      '1 action cụ thể tôi commit trong 30 ngày để Trí sắc hơn là gì?'
+    ],
+    bmi:'C · Connection', bmiSub:'Quan hệ xây trên giá trị thực. BMI Practicing L3 · Mature L4–L5',
+    color:'#4DAA7C', dim:'rgba(77,170,124,.11)'
+  }
+];
+
+/* Build matrix rows */
+const wrap=document.getElementById('matrix-wrap');
+let selEl=null;
+
+ROWS.forEach((row,ri)=>{
+  const rh=document.createElement('div');
+  rh.className='row-hd';
+  rh.style.setProperty('--rc',row.color);
+  rh.innerHTML=`<span class="rh-code">${row.code}</span><span class="rh-sub">${row.sub}</span>`;
+  wrap.appendChild(rh);
+  COLS.forEach((col,ci)=>{
+    const c=CELLS[ri*4+ci];
+    const div=document.createElement('div');
+    div.className='m-cell';
+    div.style.setProperty('--cc2',col.cssVar);
+    div.innerHTML=`<span class="cell-name">${c.name}</span><span class="cell-desc">${c.desc}</span><span class="cell-hint">xem ↗</span>`;
+    div.addEventListener('click',()=>pick(div,c,row,col));
+    wrap.appendChild(div);
+  });
+});
+
+function pick(el,c,row,col){
+  if(selEl===el){selEl=null;closeD();return}
+  if(selEl)selEl.classList.remove('sel');
+  selEl=el;el.classList.add('sel');
+  document.getElementById('d-bc').textContent=`${row.code} — ${row.sub}  /  ${col.name} — ${col.sub}`;
+  const dc=document.getElementById('d-concept');
+  dc.textContent=c.name;dc.style.color=col.hex;
+  document.getElementById('d-desc').textContent=c.desc;
+  const det=document.getElementById('detail');
+  det.classList.add('show');
+  det.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeD(){
+  document.getElementById('detail').classList.remove('show');
+  if(selEl){selEl.classList.remove('sel');selEl=null}
+}
+
+/* Build reflect */
+const rl=document.getElementById('ref-list');
+REFLECT.forEach((r,i)=>{
+  const item=document.createElement('div');
+  item.className='ref-item';
+  item.style.setProperty('--rc3',r.color);
+  item.style.setProperty('--rc3-d',r.dim);
+
+  const qs=r.qs.map((q,qi)=>`
+    <div class="q-card${qi===3?' commit':''}">
+      <span class="q-num">${qi+1} ·</span>
+      <p class="q-txt">${q}</p>
+    </div>`).join('');
+
+  const[b1,b2]=r.badge.split('\n');
+  item.innerHTML=`
+    <button class="ref-trig" onclick="toggleRef(${i})">
+      <div class="ref-badge"><span class="ref-badge-txt">${b1}<br>${b2}</span></div>
+      <div class="ref-trig-body">
+        <span class="ref-trig-code">${r.axis}</span>
+        <span class="ref-trig-sub">${r.sub}</span>
+        <span class="ref-trig-q">"${r.q}"</span>
+      </div>
+      <div class="ref-arrow">▾</div>
+    </button>
+    <div class="ref-body">
+      <div class="ref-divider"></div>
+      <div class="q-grid">${qs}</div>
+      <div class="bmi-tag">
+        <span class="bmi-lbl">Biểu hiện BMI</span>
+        <span class="bmi-txt"><strong>${r.bmi}</strong> — ${r.bmiSub}</span>
+      </div>
+    </div>`;
+  rl.appendChild(item);
+});
+
+function toggleRef(i){
+  const items=document.querySelectorAll('.ref-item');
+  const already=items[i].classList.contains('open');
+  items.forEach(el=>el.classList.remove('open'));
+  if(!already)items[i].classList.add('open');
+}
+function goTab(id,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-'+id).classList.add('active');
+}
+</script>
+</body>
+</html>
