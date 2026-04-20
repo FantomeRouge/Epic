@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPAG Knowledge System — Kiến trúc Tri thức Tổ chức</title>
+<style>
+  :root {
+    --navy: #0D1B2A;
+    --navy-mid: #1A2E45;
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-pale: #F5E9C8;
+    --cream: #FAF7F2;
+    --white: #FFFFFF;
+    --text-dark: #0D1B2A;
+    --text-mid: #3A4A5C;
+    --text-light: #8A9BAD;
+    --validated: #2D6A4F;
+    --validated-bg: #D8F3DC;
+    --testing: #B5651D;
+    --testing-bg: #FDEBD0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; background:var(--cream); color:var(--text-dark); font-size:14px; line-height:1.75; }
+
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:var(--navy); display:flex; align-items:center;
+    padding:0 48px; height:54px;
+    border-bottom:1px solid rgba(201,168,76,0.25);
+  }
+  .nav-brand { color:var(--gold); font-size:13px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-right:auto; }
+  .nav-links { display:flex; gap:2px; }
+  .nav-links a { color:rgba(255,255,255,0.6); text-decoration:none; font-size:11px; font-weight:400; letter-spacing:0.07em; text-transform:uppercase; padding:6px 14px; border-radius:3px; transition:all 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color:var(--gold-light); background:rgba(201,168,76,0.1); }
+
+  main { margin-top:54px; }
+  section { padding:72px 48px; max-width:1080px; margin:0 auto; }
+  .section-divider { border:none; border-top:1px solid rgba(13,27,42,0.08); margin:0; }
+
+  .eyebrow { font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:10px; }
+  .section-title { font-size:28px; font-weight:700; color:var(--navy); margin-bottom:8px; line-height:1.2; letter-spacing:-0.01em; }
+  .section-sub { color:var(--text-mid); font-size:13px; margin-bottom:40px; max-width:620px; line-height:1.7; }
+
+  /* BRIEF */
+  #brief { padding-top:64px; padding-bottom:56px; }
+  .brief-header { display:flex; align-items:flex-start; gap:48px; margin-bottom:36px; }
+  .brief-label { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:12px; }
+  .brief-title { font-size:36px; font-weight:700; color:var(--navy); line-height:1.15; flex:1; letter-spacing:-0.02em; }
+  .brief-meta { text-align:right; min-width:180px; padding-top:6px; }
+  .brief-meta-item { font-size:11px; color:var(--text-light); margin-bottom:6px; line-height:1.5; }
+  .brief-meta-item strong { color:var(--text-mid); font-weight:700; display:block; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; }
+  .summary-box { background:var(--navy); border-radius:10px; padding:36px 40px; color:var(--white); position:relative; overflow:hidden; }
+  .summary-box::after { content:''; position:absolute; top:-40px; right:-40px; width:220px; height:220px; background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 65%); pointer-events:none; }
+  .summary-box h3 { font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold-light); margin-bottom:14px; }
+  .summary-box p { color:rgba(255,255,255,0.8); font-size:14px; line-height:1.8; max-width:740px; }
+  .summary-box p+p { margin-top:12px; }
+  .summary-box strong { color:var(--white); font-weight:700; }
+
+  /* RULES */
+  .rule-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:40px; }
+  .rule-card { background:var(--white); border:1px solid rgba(13,27,42,0.08); border-radius:8px; padding:22px 20px; }
+  .rule-num { font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+  .rule-card h4 { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:8px; line-height:1.3; }
+  .rule-card p { font-size:12px; color:var(--text-mid); line-height:1.7; }
+
+  /* TWO LAYER CARDS */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .layer-card { border-radius:10px; padding:32px; }
+  .layer-card.kb { background:var(--navy); }
+  .layer-card.os { background:var(--white); border:1px solid rgba(13,27,42,0.1); }
+  .layer-tag { display:inline-block; font-size:9px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; padding:4px 10px; border-radius:20px; margin-bottom:14px; }
+  .kb .layer-tag { background:rgba(201,168,76,0.18); color:var(--gold-light); }
+  .os .layer-tag { background:rgba(13,27,42,0.07); color:var(--navy); }
+  .layer-card h3 { font-size:22px; font-weight:700; margin-bottom:4px; line-height:1.2; }
+  .kb h3 { color:var(--white); }
+  .os h3 { color:var(--navy); }
+  .layer-card .tagline { font-size:12px; font-style:italic; margin-bottom:24px; opacity:0.65; }
+  .kb .tagline { color:var(--white); }
+  .os .tagline { color:var(--text-mid); }
+
+  .wh-block { margin-bottom:16px; }
+  .wh-label { font-size:9px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .kb .wh-label { color:var(--gold); }
+  .os .wh-label { color:var(--navy); }
+  .wh-label::after { content:''; flex:1; height:1px; }
+  .kb .wh-label::after { background:rgba(201,168,76,0.2); }
+  .os .wh-label::after { background:rgba(13,27,42,0.1); }
+  .wh-content { font-size:12px; line-height:1.75; }
+  .kb .wh-content { color:rgba(255,255,255,0.78); }
+  .os .wh-content { color:var(--text-mid); }
+  .kb .wh-content strong { color:var(--white); font-weight:700; }
+  .os .wh-content strong { color:var(--navy); font-weight:700; }
+
+  /* KB VERSION DIAGRAM */
+  .kb-versions { margin:14px 0; border-radius:8px; background:rgba(255,255,255,0.05); padding:14px 16px; }
+  .kb-ver-item { display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.07); }
+  .kb-ver-item:last-child { border-bottom:none; }
+  .kb-ver-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:4px; }
+  .kb-ver-name { font-size:11px; font-weight:700; color:var(--gold-light); letter-spacing:0.06em; margin-bottom:3px; }
+  .kb-ver-desc { font-size:11px; color:rgba(255,255,255,0.65); line-height:1.6; }
+  .kb-ver-scope { display:inline-block; font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:2px 8px; border-radius:10px; margin-top:5px; }
+  .scope-conf { background:rgba(201,168,76,0.15); color:var(--gold-light); }
+  .scope-rest { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); }
+  .scope-open { background:rgba(45,106,79,0.25); color:#6FCF97; }
+
+  /* INLINE STATUS TABLES */
+  .stbl { width:100%; border-collapse:collapse; margin-top:6px; font-size:11px; }
+  .stbl tr { border-bottom:1px solid rgba(13,27,42,0.06); }
+  .stbl tr:last-child { border-bottom:none; }
+  .stbl td { padding:6px 4px; vertical-align:top; color:var(--text-mid); }
+  .stbl td:first-child { font-weight:700; color:var(--navy); width:90px; white-space:nowrap; }
+  .stbl-kb { width:100%; border-collapse:collapse; margin-top:6px; font-size:11px; }
+  .stbl-kb tr { border-bottom:1px solid rgba(255,255,255,0.07); }
+  .stbl-kb tr:last-child { border-bottom:none; }
+  .stbl-kb td { padding:6px 4px; vertical-align:top; color:rgba(255,255,255,0.65); }
+  .stbl-kb td:first-child { font-weight:700; color:var(--gold-light); width:90px; white-space:nowrap; }
+
+  /* PROCESS */
+  #process { background:var(--white); padding:72px 0; }
+  #process > div { max-width:1080px; margin:0 auto; padding:0 48px; }
+  .process-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin-bottom:28px; position:relative; }
+  .process-grid::before { content:''; position:absolute; top:40px; left:10%; right:10%; height:1px; background:linear-gradient(90deg,var(--navy) 0%,var(--gold) 100%); }
+  .p-stage { text-align:center; padding:0 10px; position:relative; z-index:1; }
+  .p-circle { width:80px; height:80px; border-radius:50%; margin:0 auto 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .c1 { background:var(--navy); border:2px solid var(--navy); }
+  .c2 { background:var(--navy-mid); border:2px solid var(--navy-mid); }
+  .c3 { background:var(--gold); border:2px solid var(--gold); }
+  .c4 { background:var(--gold-light); border:2px solid var(--gold); }
+  .p-icon { font-size:20px; margin-bottom:2px; }
+  .p-sublabel { font-size:8px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; }
+  .c1 .p-sublabel, .c2 .p-sublabel { color:var(--gold-light); }
+  .c3 .p-sublabel, .c4 .p-sublabel { color:var(--navy); }
+  .p-name { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .p-desc { font-size:11px; color:var(--text-mid); line-height:1.6; margin-bottom:12px; }
+  .p-chips { display:flex; flex-direction:column; gap:4px; }
+  .chip { font-size:10px; padding:3px 8px; border-radius:10px; background:rgba(13,27,42,0.06); color:var(--text-mid); text-align:center; }
+  .loop-banner { background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(201,168,76,0.12)); border:1px dashed rgba(201,168,76,0.45); border-radius:8px; padding:18px 24px; display:flex; align-items:flex-start; gap:14px; font-size:12px; color:var(--text-mid); line-height:1.7; }
+  .loop-banner .icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+  .loop-banner strong { color:var(--navy); font-weight:700; display:block; margin-bottom:3px; }
+
+  /* STATUS */
+  .status-split { display:grid; grid-template-columns:3fr 2fr; gap:24px; margin-bottom:24px; }
+  .status-5 { display:flex; flex-direction:column; gap:10px; }
+  .s-row { display:flex; align-items:flex-start; gap:14px; padding:14px 16px; border-radius:8px; background:var(--white); border:1px solid rgba(13,27,42,0.07); }
+  .s-sym { font-size:18px; flex-shrink:0; width:26px; text-align:center; margin-top:1px; }
+  .s-name { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:2px; }
+  .s-who { font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:3px; }
+  .s-desc { font-size:11px; color:var(--text-mid); line-height:1.6; }
+  .s-row.r-validated { border-left:3px solid var(--validated); } .s-row.r-validated .s-who { color:var(--validated); }
+  .s-row.r-testing { border-left:3px solid var(--testing); } .s-row.r-testing .s-who { color:var(--testing); }
+  .s-row.r-evolving { border-left:3px solid #2A4FA0; } .s-row.r-evolving .s-who { color:#2A4FA0; }
+  .s-row.r-draft { border-left:3px solid #AAA; } .s-row.r-draft .s-who { color:#999; }
+  .s-row.r-archived { border-left:3px solid #CCC; } .s-row.r-archived .s-who { color:#BBB; }
+
+  .kb-status-box { background:var(--navy); border-radius:8px; padding:24px; }
+  .kb-status-box h4 { font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+  .kb-status-note { font-size:11px; color:rgba(255,255,255,0.45); line-height:1.6; margin-bottom:16px; }
+  .kb-s-row { padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:flex-start; gap:10px; }
+  .kb-s-row:last-child { border-bottom:none; }
+  .kb-s-sym { font-size:14px; width:22px; text-align:center; flex-shrink:0; margin-top:1px; }
+  .kb-s-name { font-size:12px; font-weight:700; color:var(--gold-light); margin-bottom:2px; }
+  .kb-s-desc { font-size:11px; color:rgba(255,255,255,0.6); line-height:1.6; }
+
+  .visibility-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .vis-box { border-radius:8px; padding:20px 22px; font-size:12px; line-height:1.7; }
+  .vis-public { background:var(--navy); color:rgba(255,255,255,0.8); }
+  .vis-private { background:rgba(13,27,42,0.04); border:1px solid rgba(13,27,42,0.08); color:var(--text-mid); }
+  .vis-box strong { display:block; font-size:9px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:6px; }
+  .vis-public strong { color:var(--gold-light); }
+  .vis-private strong { color:var(--navy); }
+  .vis-box b { font-weight:700; }
+  .vis-public b { color:var(--white); }
+  .vis-private b { color:var(--navy); }
+
+  /* CATALOG */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+  .stat-card { background:var(--white); border:1px solid rgba(13,27,42,0.08); border-radius:8px; padding:20px; text-align:center; }
+  .stat-num { font-size:36px; font-weight:700; color:var(--navy); line-height:1; margin-bottom:6px; }
+  .stat-label { font-size:10px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.1em; }
+  .filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .filter-btn { padding:6px 16px; border-radius:20px; border:1px solid rgba(13,27,42,0.14); background:var(--white); color:var(--text-mid); font-size:11px; font-family:Arial,sans-serif; cursor:pointer; transition:all 0.15s; }
+  .filter-btn:hover { border-color:var(--navy); color:var(--navy); }
+  .filter-btn.active { background:var(--navy); color:var(--white); border-color:var(--navy); }
+  .doc-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .doc-table thead tr { background:var(--navy); }
+  .doc-table th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; font-weight:700; color:rgba(255,255,255,0.7); }
+  .doc-table tbody tr { border-bottom:1px solid rgba(13,27,42,0.06); transition:background 0.12s; }
+  .doc-table tbody tr:hover { background:rgba(201,168,76,0.04); }
+  .doc-table td { padding:10px 14px; vertical-align:middle; }
+  .doc-table td:first-child { font-weight:700; color:var(--text-dark); font-size:11px; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:9px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; }
+  .badge-kb { background:var(--navy); color:var(--gold-light); }
+  .badge-os { background:rgba(13,27,42,0.07); color:var(--navy); }
+  .status-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:10px; font-size:10px; font-weight:700; }
+  .pill-validated { background:var(--validated-bg); color:var(--validated); }
+  .pill-testing { background:var(--testing-bg); color:var(--testing); }
+  .pill-dot { width:5px; height:5px; border-radius:50%; }
+  .pill-validated .pill-dot { background:var(--validated); }
+  .pill-testing .pill-dot { background:var(--testing); }
+  .doc-type-label { color:var(--text-mid); font-size:11px; }
+
+  footer { background:var(--navy); color:rgba(255,255,255,0.4); text-align:center; padding:22px; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; }
+  footer span { color:var(--gold); }
+  html { scroll-behavior:smooth; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">IPAG · Knowledge System</div>
+  <div class="nav-links">
+    <a href="#brief" class="active" onclick="setActive(this)">Giới thiệu</a>
+    <a href="#taxonomy" onclick="setActive(this)">Hai lớp tri thức</a>
+    <a href="#process" onclick="setActive(this)">Vòng đời tri thức</a>
+    <a href="#status" onclick="setActive(this)">Độ tin cậy</a>
+    <a href="#catalog" onclick="setActive(this)">Danh mục EPIC</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- BRIEF -->
+<section id="brief">
+  <div class="brief-header">
+    <div style="flex:1">
+      <div class="brief-label">IPAG Group · Knowledge Management System · April 2026</div>
+      <h1 class="brief-title">Kiến trúc Tri thức<br>Tổ chức</h1>
+    </div>
+    <div class="brief-meta">
+      <div class="brief-meta-item"><strong>Phiên bản</strong>1.0</div>
+      <div class="brief-meta-item"><strong>Phạm vi</strong>EPIC Framework</div>
+      <div class="brief-meta-item"><strong>Tài liệu phân loại</strong>34 files</div>
+      <div class="brief-meta-item"><strong>Phân loại</strong>Confidential</div>
+    </div>
+  </div>
+  <div class="summary-box">
+    <h3>Vấn đề và hướng giải quyết</h3>
+    <p>IPAG không thiếu tri thức. Tri thức đang tồn tại khắp nơi — trong tài liệu, trong con người, trong kinh nghiệm dự án. Vấn đề là không ai biết tri thức nào đang có, tri thức nào còn hiệu lực, và tri thức nào đủ tin cậy để áp dụng. Kết quả: cùng một vấn đề được giải quyết theo nhiều cách khác nhau, sai lầm cũ lặp lại, và kinh nghiệm tốt không được nhân rộng.</p>
+    <p>Knowledge Management System được xây dựng để thay đổi điều đó — bắt đầu bằng một kiến trúc rõ ràng: <strong>tri thức nào là gốc rễ của tổ chức, tri thức nào là hướng dẫn vận hành, và mỗi loại được phát triển, kiểm chứng và sử dụng như thế nào.</strong> Tài liệu này trình bày kiến trúc đó và áp dụng ngay vào 34 tài liệu EPIC đã được phân loại.</p>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- SECTION 1 -->
+<section id="taxonomy">
+  <div class="eyebrow">Phần 01</div>
+  <h2 class="section-title">Hai lớp Tri thức</h2>
+  <p class="section-sub">Mọi tri thức trong tổ chức thuộc một trong hai lớp. Ranh giới không nằm ở nội dung — mà nằm ở lý do tài liệu đó được tạo ra.</p>
+
+  <div class="rule-grid">
+    <div class="rule-card">
+      <div class="rule-num">Nguyên tắc 01</div>
+      <h4>Mục đích, không phải nội dung</h4>
+      <p>Phân loại dựa trên lý do tài liệu được tạo ra. Một tài liệu vận hành có thể chứa nguyên lý KB để đủ ngữ cảnh — điều đó bình thường. Khi tài liệu trả lời câu hỏi "làm như thế nào" → OS.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Nguyên tắc 02</div>
+      <h4>KB không hướng dẫn hành động</h4>
+      <p>KB tồn tại để định nghĩa bản chất của một lĩnh vực tri thức — không chỉ dẫn ai làm gì. Dù KB được biên soạn thành nhiều tầng với phạm vi phân phối khác nhau, bản chất vẫn là định nghĩa và nguyên lý — không phải hướng dẫn thực hiện.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Nguyên tắc 03</div>
+      <h4>Mapping và thiết kế luôn là OS</h4>
+      <p>Sơ đồ tổ chức, data model, process map, design guide — dù xây từ nguyên lý KB — đều là OS vì chúng thay đổi theo chiến lược, công nghệ và giai đoạn. Bản chất không thay đổi; thiết kế thì có.</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+
+    <div class="layer-card kb">
+      <span class="layer-tag">Lớp nền tảng · Layer 01</span>
+      <h3>Knowledge Base</h3>
+      <p class="tagline">Gốc rễ tổ chức — những điều không thay đổi khi chiến lược thay đổi</p>
+
+      <div class="wh-block">
+        <div class="wh-label">Why — Tại sao lớp này tồn tại</div>
+        <div class="wh-content">Mọi lĩnh vực tri thức cần một bộ nguyên lý nền tảng ổn định — định nghĩa lĩnh vực đó là gì, vận hành theo logic nào, và những ranh giới nào không được vi phạm. Không có KB, mọi tài liệu vận hành đều thiếu điểm tham chiếu chung và dễ mâu thuẫn theo thời gian.</div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">What — Tri thức lớp này gồm những gì</div>
+        <div class="wh-content">Triết lý và nguyên lý nền tảng của lĩnh vực · Nguyên tắc quản trị <em style="opacity:0.7">(chỉ ghi nguyên tắc — ai có thẩm quyền theo logic nào; sơ đồ và phân quyền chi tiết thuộc OS)</em> · Khung định hướng dài hạn · Bộ thuật ngữ chung của lĩnh vực.<br><br>
+        <strong>KB được tổ chức thành 3 tầng theo phạm vi phân phối:</strong></div>
+      </div>
+
+      <div class="kb-versions">
+        <div class="kb-ver-item">
+          <div class="kb-ver-dot" style="margin-top:4px;flex-shrink:0"></div>
+          <div>
+            <div class="kb-ver-name">KB.Source · Tầng Nguồn gốc</div>
+            <div class="kb-ver-desc">Tri thức gốc rễ được Knowledge Owner thiết kế — có thể lấy cảm hứng và tham chiếu từ nguồn bên ngoài. Ngôn ngữ và độ sâu do Knowledge Owner quyết định.</div>
+            <span class="kb-ver-scope scope-conf">Confidential</span>
+          </div>
+        </div>
+        <div class="kb-ver-item">
+          <div class="kb-ver-dot" style="margin-top:4px;flex-shrink:0"></div>
+          <div>
+            <div class="kb-ver-name">KB.Full · Tầng Đầy đủ</div>
+            <div class="kb-ver-desc">Toàn bộ bức tranh — bao gồm nội dung chiến lược và governance nhạy cảm. Ngôn ngữ phù hợp với người có thẩm quyền ra quyết định. Được phát hành sau khi Knowledge Owner approve.</div>
+            <span class="kb-ver-scope scope-rest">Restricted · C-hub · FD Head</span>
+          </div>
+        </div>
+        <div class="kb-ver-item">
+          <div class="kb-ver-dot" style="margin-top:4px;flex-shrink:0"></div>
+          <div>
+            <div class="kb-ver-name">KB.Distilled · Tầng Tinh gọn</div>
+            <div class="kb-ver-desc">Rút gọn từ KB.Full — cắt nội dung nhạy cảm, giữ cốt lõi. Ngôn ngữ hành vi thực tế, mọi cấp độ đọc được. Được biên soạn và phát hành sau khi Knowledge Owner approve.</div>
+            <span class="kb-ver-scope scope-open">Open · Toàn tổ chức</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">When — Khi nào sử dụng</div>
+        <div class="wh-content">Khi cần hiểu một lĩnh vực tri thức ở tầng nguyên lý — trước khi thiết kế quy trình, trước khi ra quyết định quan trọng, khi có mâu thuẫn giữa các tài liệu OS cần nguồn tham chiếu để phân xử.</div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">Who — Đối tượng</div>
+        <div class="wh-content"><strong>Xây dựng & phê duyệt:</strong> Knowledge Owner của từng lĩnh vực tri thức.<br><strong>Sử dụng:</strong> Theo scope từng tầng. KB.Distilled là tầng duy nhất toàn tổ chức đọc — không có bản KB customize theo BU; customization thuộc OS.</div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">How — Cách sử dụng</div>
+        <div class="wh-content">
+          <strong>Dùng làm gì:</strong> Điểm tham chiếu khi xây dựng OS · Phân xử mâu thuẫn giữa các quy trình · Định hướng quyết định khi chưa có tiền lệ · Onboarding tri thức nền cho người mới vào lĩnh vực.<br><br>
+          <strong>Cập nhật:</strong> Một chiều, không đảo ngược — KB.Source → KB.Full → KB.Distilled. Khi KB.Source cập nhật, KB.Full và KB.Distilled bắt buộc review theo cascade. Knowledge Owner declare cập nhật để trigger toàn bộ quy trình.<br><br>
+          <strong>Liên kết:</strong> KB.Full và KB.Distilled ghi rõ "Dẫn xuất từ KB.Source · [ID · version]". Mọi OS ghi rõ KB tầng và version đang tham chiếu. Khi KB thay đổi, OS liên quan được cảnh báo để review. Best Practice từ thực tế chỉ feed lên OS — muốn nâng lên KB phải qua Knowledge Owner declare.
+        </div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">Status KB — 3 trạng thái riêng</div>
+        <div class="wh-content" style="font-size:11px;opacity:0.65;margin-bottom:8px;">KB không dùng 5 status của OS. Nếu KB chưa Validated, mọi OS dẫn xuất đang đứng trên nền không chắc.</div>
+        <table class="stbl-kb">
+          <tr><td>Drafting</td><td>Đang được Knowledge Owner thiết kế — chưa phát hành chính thức</td></tr>
+          <tr><td>Validated</td><td>Đã được phê duyệt — chuẩn tham chiếu của lĩnh vực tri thức</td></tr>
+          <tr><td>Archived</td><td>Không còn hiệu lực — giữ lại để truy vết lịch sử quyết định</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="layer-card os">
+      <span class="layer-tag">Lớp vận hành · Layer 02</span>
+      <h3>Operation System</h3>
+      <p class="tagline">Dẫn xuất từ KB — phục vụ người cụ thể, trong tình huống cụ thể</p>
+
+      <div class="wh-block">
+        <div class="wh-label">Why — Tại sao lớp này tồn tại</div>
+        <div class="wh-content">Nguyên lý trong KB cần được chuyển hóa thành hành động cụ thể — phù hợp với từng đối tượng, từng tình huống, từng giai đoạn phát triển. OS là cầu nối giữa tư duy và thực thi. Không có OS, KB chỉ là nguyên lý trên giấy.</div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">What — Tri thức lớp này gồm những gì</div>
+        <div class="wh-content">Handbook · SOP · Design Guide · Chính sách · Quy trình · Biểu mẫu · Hướng dẫn theo vai trò · Catalog nghiệp vụ · Tài liệu customize theo BU</div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">When — Khi nào sử dụng</div>
+        <div class="wh-content">Khi cần hành động — tra cứu trước khi thực hiện công việc, onboarding vai trò mới, thiết kế quy trình cho đơn vị, chuẩn hóa cách làm việc trong team.</div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">Who — Đối tượng</div>
+        <div class="wh-content"><strong>Xây dựng & phê duyệt:</strong> Process owner và SME của từng domain.<br><strong>Sử dụng:</strong> Audience xác định cho từng tài liệu — SM, HRBP, Dev team, nhân sự mới, FD Head. Nhân sự các cấp sử dụng OS để thực thi — không tự dẫn xuất trực tiếp từ KB.</div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">How — Cách sử dụng</div>
+        <div class="wh-content">
+          <strong>Dùng làm gì:</strong> Thực thi công việc hàng ngày · Đào tạo người mới · Thiết kế quy trình · Chuẩn hóa cách làm việc trong đơn vị.<br><br>
+          <strong>Cập nhật:</strong> Theo chu kỳ định kỳ hoặc khi có thay đổi chiến lược — mỗi tài liệu có review date và process owner chịu trách nhiệm. OS không được tự cập nhật mà không đối chiếu với KB nguồn.<br><br>
+          <strong>Liên kết:</strong> Mỗi tài liệu OS ghi rõ KB tầng và version đang tham chiếu. Output của giai đoạn Kiểm chứng (Hồ sơ Mâu thuẫn · Nhật ký Quyết định) được gắn vào tài liệu OS liên quan dưới dạng appendix — không tạo zone riêng. Khi KB thay đổi, OS liên quan được cảnh báo tự động.
+        </div>
+      </div>
+
+      <div class="wh-block">
+        <div class="wh-label">Status OS — 5 trạng thái</div>
+        <table class="stbl">
+          <tr><td>○ Draft</td><td>Đang soạn thảo — chưa sẵn sàng sử dụng</td></tr>
+          <tr><td>◑ Testing</td><td>Đang kiểm chứng — dùng được, cần phản hồi để hoàn thiện</td></tr>
+          <tr><td>● Validated</td><td>Chuẩn chính thức — áp dụng ngay</td></tr>
+          <tr><td>↻ Evolving</td><td>Validated và đang cải tiến — phiên bản hiện tại vẫn hiệu lực</td></tr>
+          <tr><td>∅ Archived</td><td>Hết hiệu lực — giữ lại để tham chiếu lịch sử</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- SECTION 2 -->
+<section id="process" style="background:var(--white);padding:72px 0;">
+<div style="max-width:1080px;margin:0 auto;padding:0 48px;">
+  <div class="eyebrow">Phần 02</div>
+  <h2 class="section-title">Vòng đời Phát triển Tri thức</h2>
+  <p class="section-sub">Tri thức không xuất hiện ngay ở dạng hoàn chỉnh. Nó được xây dựng, kiểm chứng và liên tục hoàn thiện qua 4 lớp — mỗi lớp tạo ra một loại tài liệu với vai trò riêng.</p>
+
+  <div class="process-grid">
+    <div class="p-stage">
+      <div class="p-circle c1"><div class="p-icon">🏛️</div><div class="p-sublabel">KB</div></div>
+      <div class="p-name">Nền tảng</div>
+      <div class="p-desc">Định hình nguyên lý, triết lý và ngôn ngữ chung của lĩnh vực. Mọi tri thức vận hành bắt đầu từ đây.</div>
+      <div class="p-chips">
+        <span class="chip">Tuyên ngôn năng lực</span>
+        <span class="chip">Khung định hướng</span>
+        <span class="chip">Nguyên tắc quản trị</span>
+        <span class="chip">Bộ thuật ngữ</span>
+      </div>
+    </div>
+    <div class="p-stage">
+      <div class="p-circle c2"><div class="p-icon">⚙️</div><div class="p-sublabel">OS</div></div>
+      <div class="p-name">Thiết kế vận hành</div>
+      <div class="p-desc">Chuyển hóa nguyên lý thành hướng dẫn cụ thể — đúng người, đúng tình huống, đúng cấp độ.</div>
+      <div class="p-chips">
+        <span class="chip">SOP · Handbook</span>
+        <span class="chip">Design Guide</span>
+        <span class="chip">Chính sách · Biểu mẫu</span>
+        <span class="chip">Process Map</span>
+      </div>
+    </div>
+    <div class="p-stage">
+      <div class="p-circle c3"><div class="p-icon">🔍</div><div class="p-sublabel">Validation</div></div>
+      <div class="p-name">Kiểm chứng</div>
+      <div class="p-desc">Thử thách tri thức trước khi chuẩn hóa. Output gắn vào OS liên quan dưới dạng appendix — không tạo zone riêng.</div>
+      <div class="p-chips">
+        <span class="chip">Báo cáo Stress Test</span>
+        <span class="chip">Hồ sơ Mâu thuẫn</span>
+        <span class="chip">Nhật ký Giả định</span>
+        <span class="chip">Nhật ký Quyết định</span>
+      </div>
+    </div>
+    <div class="p-stage">
+      <div class="p-circle c4"><div class="p-icon">🌱</div><div class="p-sublabel">Insight</div></div>
+      <div class="p-name">Tri thức Thực địa</div>
+      <div class="p-desc">Ghi lại những gì xảy ra khi áp dụng thực tế. Nguồn nguyên liệu hoàn thiện OS — hoặc nâng lên KB khi Knowledge Owner declare.</div>
+      <div class="p-chips">
+        <span class="chip">Báo cáo Pilot</span>
+        <span class="chip">Bài học Kinh nghiệm</span>
+        <span class="chip">Case Study</span>
+        <span class="chip">Best Practice (sơ bộ)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="loop-banner">
+    <div class="icon">↩️</div>
+    <div>
+      <strong>Vòng lặp tự hoàn thiện</strong>
+      Bài học Kinh nghiệm và Best Practice đã kiểm chứng từ thực địa được tổng hợp và đưa ngược lên để cập nhật OS — mỗi chu kỳ thực thi, hệ thống tri thức được nâng cấp một lần. Muốn nâng cấp lên KB: Knowledge Owner declare. Đây là cơ chế tổ chức tự học — không phụ thuộc vào bất kỳ cá nhân nào.
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="section-divider">
+
+<!-- SECTION 3 -->
+<section id="status">
+  <div class="eyebrow">Phần 03</div>
+  <h2 class="section-title">Độ tin cậy của Tri thức</h2>
+  <p class="section-sub">Mỗi tài liệu trong KMS mang một trạng thái — để người dùng biết ngay: tài liệu này đã đủ tin để áp dụng chưa, hay vẫn đang trong quá trình hoàn thiện.</p>
+
+  <div class="status-split">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--navy);margin-bottom:12px;">Operation System — 5 Trạng thái</div>
+      <div class="status-5">
+        <div class="s-row r-draft">
+          <div class="s-sym">○</div>
+          <div><div class="s-name">Draft</div><div class="s-who">Đang soạn thảo</div><div class="s-desc">Nội dung chưa hoàn chỉnh. Chưa sẵn sàng để sử dụng trong thực tế.</div></div>
+        </div>
+        <div class="s-row r-testing">
+          <div class="s-sym">◑</div>
+          <div><div class="s-name">Testing</div><div class="s-who">Đang kiểm chứng</div><div class="s-desc">Đã có nội dung đầy đủ, đang được áp dụng thử. Dùng được — và cần phản hồi để hoàn thiện.</div></div>
+        </div>
+        <div class="s-row r-validated">
+          <div class="s-sym">●</div>
+          <div><div class="s-name">Validated</div><div class="s-who">Chuẩn chính thức</div><div class="s-desc">Đã qua kiểm chứng đầy đủ. Đây là chuẩn của tổ chức — áp dụng ngay, không cần xác nhận thêm.</div></div>
+        </div>
+        <div class="s-row r-evolving">
+          <div class="s-sym">↻</div>
+          <div><div class="s-name">Evolving</div><div class="s-who">Cập nhật có kiểm soát</div><div class="s-desc">Đã Validated và đang được cải tiến dựa trên thực tế mới. Phiên bản hiện tại vẫn còn hiệu lực.</div></div>
+        </div>
+        <div class="s-row r-archived">
+          <div class="s-sym">∅</div>
+          <div><div class="s-name">Archived</div><div class="s-who">Lưu trữ lịch sử</div><div class="s-desc">Đã hết hiệu lực. Giữ lại để tham chiếu lịch sử và truy vết quyết định.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kb-status-box">
+      <h4>Knowledge Base — 3 Trạng thái riêng</h4>
+      <div class="kb-status-note">KB không dùng 5 status của OS. Nếu KB chưa Validated, mọi OS dẫn xuất đang đứng trên nền không chắc.</div>
+      <div class="kb-s-row">
+        <div class="kb-s-sym">✏️</div>
+        <div><div class="kb-s-name">Drafting</div><div class="kb-s-desc">Đang được Knowledge Owner thiết kế — chưa phát hành chính thức vào KMS.</div></div>
+      </div>
+      <div class="kb-s-row">
+        <div class="kb-s-sym">●</div>
+        <div><div class="kb-s-name">Validated</div><div class="kb-s-desc">Đã được phê duyệt — chuẩn tham chiếu của lĩnh vực tri thức.</div></div>
+      </div>
+      <div class="kb-s-row">
+        <div class="kb-s-sym">∅</div>
+        <div><div class="kb-s-name">Archived</div><div class="kb-s-desc">Không còn hiệu lực — giữ lại để truy vết lịch sử quyết định.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="visibility-row">
+    <div class="vis-box vis-public">
+      <strong>👁 Người dùng nhìn thấy</strong>
+      <b>Trạng thái tri thức (Knowledge Status)</b> — hiển thị trực tiếp trên mỗi tài liệu. Người dùng biết ngay tài liệu đang ở mức tin cậy nào và có thể áp dụng vào công việc chưa.
+    </div>
+    <div class="vis-box vis-private">
+      <strong>🔒 Quản trị nội bộ</strong>
+      <b>Giai đoạn phát triển (Development Stage)</b> — Build → Kiểm chứng → Demo → Phát hành → Thu insight. Metadata theo dõi tiến độ hoàn thiện tài liệu nội bộ. Không hiển thị với người dùng — vì mô tả quá trình làm ra tài liệu, không mô tả giá trị tri thức bên trong.
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- SECTION 4 -->
+<section id="catalog">
+  <div class="eyebrow">Phần 04</div>
+  <h2 class="section-title">Danh mục Tài liệu EPIC</h2>
+  <p class="section-sub">34 tài liệu EPIC đã được phân loại theo kiến trúc này và gán trạng thái ban đầu. Dùng bộ lọc để xem theo nhóm quan tâm.</p>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">34</div><div class="stat-label">Tổng tài liệu được phân loại</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--gold)">2</div><div class="stat-label">Knowledge Base</div></div>
+    <div class="stat-card"><div class="stat-num">32</div><div class="stat-label">Operation System</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--validated)">2</div><div class="stat-label">Validated · 32 đang Testing</div></div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterDocs('all',this)">Tất cả (34)</button>
+    <button class="filter-btn" onclick="filterDocs('kb',this)">Knowledge Base (2)</button>
+    <button class="filter-btn" onclick="filterDocs('os',this)">Operation System (32)</button>
+    <button class="filter-btn" onclick="filterDocs('validated',this)">● Validated (2)</button>
+    <button class="filter-btn" onclick="filterDocs('testing',this)">◑ Testing (32)</button>
+  </div>
+
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Tên tài liệu</th>
+        <th>Lớp tri thức</th>
+        <th>Loại tài liệu</th>
+        <th>Đối tượng sử dụng</th>
+        <th>Trạng thái</th>
+      </tr>
+    </thead>
+    <tbody id="docTableBody"></tbody>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  IPAG Group · Knowledge Management System · Kiến trúc Tri thức Tổ chức · v1.0 · April 2026 · <span>Confidential</span>
+</footer>
+
+<script>
+const docs = [
+  {name:"EPIC_Appendix_Suite_v2",type:"kb",docType:"Capability Statement · Strategic Framework",audience:"Toàn tổ chức",status:"validated"},
+  {name:"EPIC_Master_Concept_v3_2_8",type:"kb",docType:"Capability Statement · Strategic Framework",audience:"Toàn tổ chức",status:"validated"},
+  {name:"EPIC_Architecture_Map_v2",type:"os",docType:"Process Architecture",audience:"SM · FD Head · HR",status:"testing"},
+  {name:"EPIC_Data_Entity_Map_v1",type:"os",docType:"Process Architecture (Technical)",audience:"Dev team · System Architect · DBA",status:"testing"},
+  {name:"EPIC_State_Machine_Spec_v1",type:"os",docType:"Process Architecture (Technical)",audience:"Dev team · QA · System Architect",status:"testing"},
+  {name:"EPIC_Trigger_Catalog_v1",type:"os",docType:"Process Architecture (Technical)",audience:"Dev team · System Architect",status:"testing"},
+  {name:"EPIC_FC_Design_Guide_v3",type:"os",docType:"Process Architecture",audience:"GTM · VCO · BIS",status:"testing"},
+  {name:"EPIC_FC_Operational_Manual_v1",type:"os",docType:"SOP · Handbook",audience:"CA · SSE · CSO · CSE · AM · FCM",status:"testing"},
+  {name:"EPIC_FC_SOA_Addendum_v1",type:"os",docType:"Guideline",audience:"FD Head · SM",status:"testing"},
+  {name:"EPIC_OC_Design_Guide_v2",type:"os",docType:"Process Architecture",audience:"OCM · FD Head",status:"testing"},
+  {name:"EPIC_OC_Operational_Manual_v1",type:"os",docType:"SOP · Handbook",audience:"Driver · Contributor · Approver",status:"testing"},
+  {name:"EPIC_OD_Design_Guide_v1",type:"os",docType:"Process Architecture",audience:"FD Head · SM",status:"testing"},
+  {name:"EPIC_OD_Catalog_IPAS_v1",type:"os",docType:"Template · Guideline",audience:"SDE · PM · QA · SM (IPAS)",status:"testing"},
+  {name:"EPIC_OM_Design_Guide_v1",type:"os",docType:"Process Architecture",audience:"FD Head · OCM",status:"testing"},
+  {name:"EPIC_SOA_Design_Guide_v3",type:"os",docType:"Process Architecture · Guideline",audience:"FD Head · HRBP · SM",status:"testing"},
+  {name:"EPIC_FCM_OCM_Handbook_v1",type:"os",docType:"Handbook · Guideline",audience:"iLEAD S2/S3+ (FCM · OCM)",status:"testing"},
+  {name:"EPIC_SM_Handbook_v1",type:"os",docType:"Handbook",audience:"Servant Manager (SM)",status:"testing"},
+  {name:"EPIC_dAccount_Design_Guide_v2",type:"os",docType:"Process Architecture",audience:"SM · FD Head · HRBP",status:"testing"},
+  {name:"EPIC_dAccount_Operational_Manual_v1",type:"os",docType:"SOP · Handbook",audience:"SM · TM · FD Head · HRBP · Nhân sự",status:"testing"},
+  {name:"EPIC_dLINK_Design_Guide_v2",type:"os",docType:"Process Architecture",audience:"SM",status:"testing"},
+  {name:"EPIC_dLINK_Operational_Manual_v1",type:"os",docType:"SOP · Handbook",audience:"SM",status:"testing"},
+  {name:"EPIC_KPI_OKR_Setting_Process_v1",type:"os",docType:"SOP",audience:"FD Head · FCM · SM · HR",status:"testing"},
+  {name:"EPIC_PMI_Role_Config_B2_v2",type:"os",docType:"Guideline · Handbook",audience:"SM · HR/HRBP · FD Head",status:"testing"},
+  {name:"EPIC_Salary_Band_Matrix_v1",type:"os",docType:"Policy",audience:"HR Director · HRBP · Finance",status:"testing"},
+  {name:"EPIC_SC_PSC_Addendum",type:"os",docType:"Guideline",audience:"SM · TM · HRBP",status:"testing"},
+  {name:"EPIC_Career_Transition_Playbook_v1",type:"os",docType:"SOP · Guideline",audience:"Nhân sự · SM · HRBP · FD Head",status:"testing"},
+  {name:"EPIC_Onboarding_Playbook_v1",type:"os",docType:"SOP",audience:"SM · HR/HRBP",status:"testing"},
+  {name:"EPIC_Prime_Kit_v1",type:"os",docType:"Handbook",audience:"Nhân sự mới",status:"testing"},
+  {name:"EPIC_Clinics_Operating_Manual_v1",type:"os",docType:"SOP · Handbook",audience:"Facilitator · SM · HR/HRBP",status:"testing"},
+  {name:"EPIC_PIP_Process_v1",type:"os",docType:"SOP",audience:"SM · FD Head · HRBP",status:"testing"},
+  {name:"EPIC_Rhythm_Guide_v1",type:"os",docType:"Guideline · SOP",audience:"Nhân sự · SM · HR · FD Head",status:"testing"},
+  {name:"EPIC_OTOOB_Template_v1",type:"os",docType:"Template",audience:"OCM · Owner OC",status:"testing"},
+  {name:"BMI_PoA_EB_SDE_Guide",type:"os",docType:"Guideline (OS + embedded Validation)",audience:"SDE · AI Augmented Nextgen",status:"testing"},
+  {name:"iLEAD_SDE_Career_Guide",type:"os",docType:"Guideline · SOP",audience:"SDE · SM (IPAS)",status:"testing"},
+];
+
+function renderTable(filter) {
+  const filtered = filter==='all'?docs:filter==='kb'?docs.filter(d=>d.type==='kb'):filter==='os'?docs.filter(d=>d.type==='os'):filter==='validated'?docs.filter(d=>d.status==='validated'):docs.filter(d=>d.status==='testing');
+  document.getElementById('docTableBody').innerHTML = filtered.map(d=>`
+    <tr>
+      <td>${d.name}</td>
+      <td><span class="badge badge-${d.type}">${d.type==='kb'?'Knowledge Base':'Operation System'}</span></td>
+      <td class="doc-type-label">${d.docType}</td>
+      <td class="doc-type-label">${d.audience}</td>
+      <td><span class="status-pill pill-${d.status}"><span class="pill-dot"></span>${d.status==='validated'?'● Validated':'◑ Testing'}</span></td>
+    </tr>`).join('');
+}
+
+function filterDocs(f,btn){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTable(f);}
+function setActive(el){document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));el.classList.add('active');}
+renderTable('all');
+window.addEventListener('scroll',()=>{
+  const ids=['brief','taxonomy','process','status','catalog'];
+  const y=window.scrollY+70;
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.offsetTop<=y&&el.offsetTop+el.offsetHeight>y){document.querySelectorAll('.nav-links a').forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+id);});}});
+});
+</script>
+</body>
+</html>
